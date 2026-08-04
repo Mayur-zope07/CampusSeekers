@@ -3,12 +3,15 @@ package com.campusseekers.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,15 +49,15 @@ public class StudentProfile extends BaseEntity {
     @Column(name = "phone", length = 20)
     private String phone;
 
-    @NotBlank(message = "Gender is required")
-    @Size(max = 20, message = "Gender cannot exceed 20 characters")
+    @NotNull(message = "Gender is required")
     @Column(name = "gender", nullable = false, length = 20)
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
-    @NotBlank(message = "Category is required")
-    @Size(max = 50, message = "Category cannot exceed 50 characters")
+    @NotNull(message = "Category is required")
     @Column(name = "category", nullable = false, length = 50)
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
     @Size(max = 50, message = "Sub-category cannot exceed 50 characters")
     @Column(name = "sub_category", length = 50)

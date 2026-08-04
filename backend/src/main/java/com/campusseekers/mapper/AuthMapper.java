@@ -6,7 +6,7 @@ import com.campusseekers.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", builder = @org.mapstruct.Builder(disableBuilder = true))
 public interface AuthMapper {
 
     CurrentUserResponse toCurrentUserResponse(User user);
