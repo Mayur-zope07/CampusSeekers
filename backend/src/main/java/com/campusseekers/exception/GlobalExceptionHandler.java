@@ -11,6 +11,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import jakarta.validation.ValidationException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,10 +65,34 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed", request, errors);
     }
 
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintValidationException(ValidationException ex, HttpServletRequest request) {
+        log.warn("Constraint validation failure: {}", ex.getMessage());
+        return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request, null);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
         log.warn("Access Denied: {}", ex.getMessage());
         return createErrorResponse(HttpStatus.FORBIDDEN, "Access Denied: Insufficient permissions", request, null);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
+        log.warn("Bad credentials login failure: {}", ex.getMessage());
+        return createErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid email or password", request, null);
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ErrorResponse> handleDisabledException(DisabledException ex, HttpServletRequest request) {
+        log.warn("Disabled user login failure: {}", ex.getMessage());
+        return createErrorResponse(HttpStatus.UNAUTHORIZED, "User account is disabled", request, null);
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<ErrorResponse> handleLockedException(LockedException ex, HttpServletRequest request) {
+        log.warn("Locked user login failure: {}", ex.getMessage());
+        return createErrorResponse(HttpStatus.UNAUTHORIZED, "User account is locked", request, null);
     }
 
     @ExceptionHandler(AuthenticationException.class)
