@@ -13,4 +13,5 @@ public interface CollegeBranchRepository extends JpaRepository<CollegeBranch, UU
     List<CollegeBranch> findByCollegeId(UUID collegeId);
     List<CollegeBranch> findByBranchId(UUID branchId);
     Optional<CollegeBranch> findByCollegeIdAndBranchId(UUID collegeId, UUID branchId);
+    boolean existsByCollegeIdAndBranchId(UUID collegeId, UUID branchId);
 }

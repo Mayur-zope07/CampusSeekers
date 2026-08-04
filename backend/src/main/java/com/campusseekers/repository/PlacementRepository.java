@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface PlacementRepository extends JpaRepository<Placement, UUID> {
     List<Placement> findByCollegeId(UUID collegeId);
     List<Placement> findByCollegeIdAndYear(UUID collegeId, Integer year);
+    List<Placement> findByCollegeIdOrderByYearDesc(UUID collegeId);
+    boolean existsByCollegeIdAndYear(UUID collegeId, Integer year);
 }

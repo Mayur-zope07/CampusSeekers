@@ -3,6 +3,8 @@ package com.campusseekers.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -38,10 +40,10 @@ public class College extends BaseEntity {
     @Column(name = "college_code", unique = true, nullable = false, length = 50)
     private String collegeCode;
 
-    @NotBlank(message = "College type is required")
-    @Size(max = 50, message = "College type cannot exceed 50 characters")
+    @NotNull(message = "College type is required")
     @Column(name = "college_type", nullable = false, length = 50)
-    private String collegeType;
+    @Enumerated(EnumType.STRING)
+    private CollegeType collegeType;
 
     @NotNull(message = "Establishment year is required")
     @Min(value = 1800, message = "Establishment year must be realistic")
@@ -78,6 +80,12 @@ public class College extends BaseEntity {
     @Size(max = 255, message = "Logo URL cannot exceed 255 characters")
     @Column(name = "logo_url", length = 255)
     private String logoUrl;
+
+    @NotNull(message = "College status is required")
+    @Column(name = "status", nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private CollegeStatus status = CollegeStatus.ACTIVE;
 
     @Builder.Default
     @OneToMany(mappedBy = "college", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
