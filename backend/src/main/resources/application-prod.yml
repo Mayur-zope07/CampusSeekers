@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  datasource:
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:20}
+      minimum-idle: ${DB_POOL_MIN_IDLE:5}
+      idle-timeout: 300000
+      max-lifetime: 600000
+      connection-timeout: 20000
+
+logging:
+  level:
+    root: WARN
+    com.campusseekers: INFO
+    org.springframework: INFO
+
+management:
+  endpoint:
+    health:
+      show-details: when_authorized

@@ -1,0 +1,34 @@
+# Maven
+target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Java
+*.class
+
+# Spring Boot
+application-local.yml
+
+# Environment Variables
+.env
+.env.*
+
+# Node.js
+node_modules/
+.next/
+
+# Build
+dist/
+out/
+
+# Logs
+*.log
+
+# Operating System
+.DS_Store
+Thumbs.db
