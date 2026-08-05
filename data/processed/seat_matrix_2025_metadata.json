@@ -1,0 +1,11 @@
+{
+  "source": "2025SeatMatrix.pdf",
+  "year": 2025,
+  "pagesProcessed": 2181,
+  "rowsExtracted": 2181,
+  "rowsSkipped": 45,
+  "duplicatesRemoved": 0,
+  "finalRows": 2136,
+  "executionTimeSeconds": 418.16,
+  "generatedAt": "2026-08-05T14:14:51.131177Z"
+}

@@ -1,0 +1,27 @@
+# CampusSeekers ETL Data Pipeline Configuration Settings
+
+# Directories are specified relative to the directory containing this settings file,
+# or resolved from the repository root using path utilities in utils.py.
+raw_data_directory: "../../data/raw"
+processed_directory: "../../data/processed"
+cleaned_directory: "../../data/cleaned"
+final_directory: "../../data/final"
+template_directory: "../../data/templates"
+log_directory: "../../data/logs"
+
+# Supported constraints for incoming datasets
+supported_years:
+  - 2023
+  - 2024
+  - 2025
+
+supported_courses:
+  - engineering
+  - medical
+  - mba
+  - mca
+  - pharmacy
+
+supported_file_types:
+  - pdf
+  - csv

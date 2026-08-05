@@ -1,0 +1,41 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data files (ignored to prevent committing raw data, Excel outputs, and logs)
+*.xlsx
+*.tmp
+*.log
+.env
+.venv
+venv/
+ENV/
+env/
+
+# Data directory under data/ (except templates and gitkeeps)
+# Note: we manage data/ at root, but just in case we have local files here
+output/*.csv
+logs/*.log
