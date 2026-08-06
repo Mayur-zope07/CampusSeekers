@@ -3,6 +3,8 @@ package com.campusseekers.controller;
 import com.campusseekers.dto.ApiResponse;
 import com.campusseekers.dto.CollegeBranchRequest;
 import com.campusseekers.dto.CollegeBranchResponse;
+import com.campusseekers.dto.PageResponse;
+import com.campusseekers.service.BranchSearchService;
 import com.campusseekers.service.CollegeBranchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,17 +12,16 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,15 +32,62 @@ import java.util.UUID;
 public class CollegeBranchController {
 
     private final CollegeBranchService collegeBranchService;
+    private final BranchSearchService branchSearchService;
+
+    private Pageable createPageable(int page, int size, String sort, String direction) {
+        if (page < 0) {
+            throw new IllegalArgumentException("Page index must not be less than zero");
+        }
+        if (size <= 0) {
+            throw new IllegalArgumentException("Page size must be greater than zero");
+        }
+
+        List<Sort.Order> orders = new ArrayList<>();
+        if (sort != null && !sort.isBlank()) {
+            String[] sortProperties = sort.split(",");
+            String[] sortDirections = direction != null ? direction.split(",") : new String[0];
+            for (int i = 0; i < sortProperties.length; i++) {
+                String prop = sortProperties[i].trim();
+                Sort.Direction dir = Sort.Direction.ASC;
+                if (i < sortDirections.length) {
+                    String d = sortDirections[i].trim().toUpperCase();
+                    if ("DESC".equals(d)) {
+                        dir = Sort.Direction.DESC;
+                    }
+                } else if (sortDirections.length > 0) {
+                    String d = sortDirections[0].trim().toUpperCase();
+                    if ("DESC".equals(d)) {
+                        dir = Sort.Direction.DESC;
+                    }
+                }
+                orders.add(new Sort.Order(dir, prop));
+            }
+        }
+        Sort finalSort = orders.isEmpty() ? Sort.unsorted() : Sort.by(orders);
+        return PageRequest.of(page, size, finalSort);
+    }
 
     @GetMapping("/api/college-branches")
     @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
-    @Operation(summary = "Get all college-branch mappings", description = "Returns all college-branch mappings. Accessible by students and admins.")
-    public ResponseEntity<ApiResponse<List<CollegeBranchResponse>>> getAllCollegeBranches() {
-        List<CollegeBranchResponse> response = collegeBranchService.getAllCollegeBranches();
-        return ResponseEntity.ok(ApiResponse.<List<CollegeBranchResponse>>builder()
+    @Operation(summary = "Search college branches", description = "Search college branch associations with fees and capacity parameters")
+    public ResponseEntity<ApiResponse<PageResponse<CollegeBranchResponse>>> getCollegeBranches(
+            @RequestParam(required = false) String college,
+            @RequestParam(required = false) String branch,
+            @RequestParam(required = false) BigDecimal minFees,
+            @RequestParam(required = false) BigDecimal maxFees,
+            @RequestParam(required = false) Integer minIntake,
+            @RequestParam(required = false) Integer maxIntake,
+            @RequestParam(required = false) Integer duration,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String direction) {
+
+        Pageable pageable = createPageable(page, size, sort, direction);
+        PageResponse<CollegeBranchResponse> response = branchSearchService.searchCollegeBranches(college, branch, minFees, maxFees, minIntake, maxIntake, duration, pageable);
+        return ResponseEntity.ok(ApiResponse.<PageResponse<CollegeBranchResponse>>builder()
                 .success(true)
-                .message("College branch mappings retrieved successfully")
+                .message("College branches retrieved successfully.")
                 .data(response)
                 .build());
     }

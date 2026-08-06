@@ -138,7 +138,7 @@ class CollegeServiceTest {
         when(collegeRepository.findById(collegeId)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> collegeService.deleteCollege(collegeId));
-        verify(collegeRepository, never()).delete(any());
+        verify(collegeRepository, never()).delete(any(College.class));
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.campusseekers.controller;
 
 import com.campusseekers.dto.BranchRequest;
 import com.campusseekers.dto.BranchResponse;
+import com.campusseekers.service.BranchSearchService;
 import com.campusseekers.service.BranchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,9 @@ class BranchControllerIntegrationTest {
     @MockBean
     private BranchService branchService;
 
+    @MockBean
+    private BranchSearchService branchSearchService;
+
     @Test
     void getBranches_ShouldReturnUnauthorized_WhenTokenIsMissing() throws Exception {
         mockMvc.perform(get("/api/branches"))
@@ -52,12 +56,15 @@ class BranchControllerIntegrationTest {
                 .branchCode("CS")
                 .build();
 
-        when(branchService.getAllBranches()).thenReturn(List.of(mockResponse));
+        com.campusseekers.dto.PageResponse<BranchResponse> mockPage = com.campusseekers.dto.PageResponse.from(
+                new org.springframework.data.domain.PageImpl<>(List.of(mockResponse))
+        );
+        when(branchSearchService.searchBranches(any(), any(), any(), any())).thenReturn(mockPage);
 
         mockMvc.perform(get("/api/branches"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data[0].branchCode").value("CS"));
+                .andExpect(jsonPath("$.data.content[0].branchCode").value("CS"));
     }
 
     @Test

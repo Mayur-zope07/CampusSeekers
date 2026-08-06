@@ -1,8 +1,10 @@
 package com.campusseekers.controller;
 
 import com.campusseekers.dto.ApiResponse;
+import com.campusseekers.dto.PageResponse;
 import com.campusseekers.dto.PlacementRequest;
 import com.campusseekers.dto.PlacementResponse;
+import com.campusseekers.service.PlacementSearchService;
 import com.campusseekers.service.PlacementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,17 +12,16 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,15 +32,60 @@ import java.util.UUID;
 public class PlacementController {
 
     private final PlacementService placementService;
+    private final PlacementSearchService placementSearchService;
+
+    private Pageable createPageable(int page, int size, String sort, String direction) {
+        if (page < 0) {
+            throw new IllegalArgumentException("Page index must not be less than zero");
+        }
+        if (size <= 0) {
+            throw new IllegalArgumentException("Page size must be greater than zero");
+        }
+
+        List<Sort.Order> orders = new ArrayList<>();
+        if (sort != null && !sort.isBlank()) {
+            String[] sortProperties = sort.split(",");
+            String[] sortDirections = direction != null ? direction.split(",") : new String[0];
+            for (int i = 0; i < sortProperties.length; i++) {
+                String prop = sortProperties[i].trim();
+                Sort.Direction dir = Sort.Direction.ASC;
+                if (i < sortDirections.length) {
+                    String d = sortDirections[i].trim().toUpperCase();
+                    if ("DESC".equals(d)) {
+                        dir = Sort.Direction.DESC;
+                    }
+                } else if (sortDirections.length > 0) {
+                    String d = sortDirections[0].trim().toUpperCase();
+                    if ("DESC".equals(d)) {
+                        dir = Sort.Direction.DESC;
+                    }
+                }
+                orders.add(new Sort.Order(dir, prop));
+            }
+        }
+        Sort finalSort = orders.isEmpty() ? Sort.unsorted() : Sort.by(orders);
+        return PageRequest.of(page, size, finalSort);
+    }
 
     @GetMapping("/api/placements")
     @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
-    @Operation(summary = "Get list of all placements", description = "Returns a list of all placement records. Accessible by students and admins.")
-    public ResponseEntity<ApiResponse<List<PlacementResponse>>> getAllPlacements() {
-        List<PlacementResponse> response = placementService.getAllPlacements();
-        return ResponseEntity.ok(ApiResponse.<List<PlacementResponse>>builder()
+    @Operation(summary = "Search placements", description = "Search and filter placements records")
+    public ResponseEntity<ApiResponse<PageResponse<PlacementResponse>>> getPlacements(
+            @RequestParam(required = false) String college,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) BigDecimal minAveragePackage,
+            @RequestParam(required = false) BigDecimal minHighestPackage,
+            @RequestParam(required = false) BigDecimal minRatio,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String direction) {
+
+        Pageable pageable = createPageable(page, size, sort, direction);
+        PageResponse<PlacementResponse> response = placementSearchService.searchPlacements(college, year, minAveragePackage, minHighestPackage, minRatio, pageable);
+        return ResponseEntity.ok(ApiResponse.<PageResponse<PlacementResponse>>builder()
                 .success(true)
-                .message("Placement records retrieved successfully")
+                .message("Placements retrieved successfully.")
                 .data(response)
                 .build());
     }

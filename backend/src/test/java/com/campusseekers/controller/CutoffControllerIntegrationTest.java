@@ -4,7 +4,7 @@ import com.campusseekers.dto.CutoffRequest;
 import com.campusseekers.dto.CutoffResponse;
 import com.campusseekers.entity.Category;
 import com.campusseekers.entity.ExamName;
-import com.campusseekers.entity.SeatType;
+import com.campusseekers.service.CutoffSearchService;
 import com.campusseekers.service.CutoffService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -41,6 +41,9 @@ class CutoffControllerIntegrationTest {
     @MockBean
     private CutoffService cutoffService;
 
+    @MockBean
+    private CutoffSearchService cutoffSearchService;
+
     @Test
     void getCutoffs_ShouldReturnUnauthorized_WhenTokenIsMissing() throws Exception {
         mockMvc.perform(get("/api/cutoffs"))
@@ -50,26 +53,29 @@ class CutoffControllerIntegrationTest {
     @Test
     @WithMockUser(username = "student@example.com", roles = "STUDENT")
     void getCutoffs_ShouldReturnList_WhenStudent() throws Exception {
-        CutoffResponse mockResponse = CutoffResponse.builder()
+        com.campusseekers.dto.CutoffSearchResponse mockResponse = com.campusseekers.dto.CutoffSearchResponse.builder()
                 .id(UUID.randomUUID())
                 .collegeBranchId(UUID.randomUUID())
                 .collegeName("COEP")
                 .branchName("CS")
-                .examName(ExamName.MHT_CET)
+                .examName(com.campusseekers.entity.ExamName.MHT_CET)
                 .year(2026)
                 .round(1)
                 .category(Category.OPEN)
-                .seatType(SeatType.GOPENS)
+                .rawSeatType("GOPENS")
                 .closingRank(1250)
                 .closingPercentile(new BigDecimal("98.45"))
                 .build();
 
-        when(cutoffService.getAllCutoffs()).thenReturn(List.of(mockResponse));
+        com.campusseekers.dto.PageResponse<com.campusseekers.dto.CutoffSearchResponse> mockPage = com.campusseekers.dto.PageResponse.from(
+                new org.springframework.data.domain.PageImpl<>(List.of(mockResponse))
+        );
+        when(cutoffSearchService.searchCutoffs(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(mockPage);
 
         mockMvc.perform(get("/api/cutoffs"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data[0].examName").value("MHT_CET"));
+                .andExpect(jsonPath("$.data.content[0].examName").value("MHT_CET"));
     }
 
     @Test
@@ -77,11 +83,11 @@ class CutoffControllerIntegrationTest {
     void postCutoff_ShouldReturnForbidden_WhenStudent() throws Exception {
         CutoffRequest request = CutoffRequest.builder()
                 .collegeBranchId(UUID.randomUUID())
-                .examName(ExamName.MHT_CET)
+                .examName(com.campusseekers.entity.ExamName.MHT_CET)
                 .year(2026)
                 .round(1)
                 .category(Category.OPEN)
-                .seatType(SeatType.GOPENS)
+                .rawSeatType("GOPENS")
                 .closingRank(1250)
                 .closingPercentile(new BigDecimal("98.45"))
                 .build();
@@ -97,11 +103,11 @@ class CutoffControllerIntegrationTest {
     void postCutoff_ShouldReturnCreated_WhenAdminAndPayloadIsValid() throws Exception {
         CutoffRequest request = CutoffRequest.builder()
                 .collegeBranchId(UUID.randomUUID())
-                .examName(ExamName.MHT_CET)
+                .examName(com.campusseekers.entity.ExamName.MHT_CET)
                 .year(2026)
                 .round(1)
                 .category(Category.OPEN)
-                .seatType(SeatType.GOPENS)
+                .rawSeatType("GOPENS")
                 .closingRank(1250)
                 .closingPercentile(new BigDecimal("98.45"))
                 .build();

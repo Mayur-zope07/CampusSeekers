@@ -43,14 +43,12 @@ public class CollegeBranch extends BaseEntity {
     @Column(name = "intake_capacity", nullable = false)
     private Integer intakeCapacity;
 
-    @NotNull(message = "Fees per year is required")
     @PositiveOrZero(message = "Fees must be positive or zero")
-    @Column(name = "fees_per_year", nullable = false, precision = 12, scale = 2)
+    @Column(name = "fees_per_year", precision = 12, scale = 2)
     private BigDecimal feesPerYear;
 
-    @NotNull(message = "Duration in years is required")
     @Positive(message = "Duration must be positive")
-    @Column(name = "duration_years", nullable = false)
+    @Column(name = "duration_years")
     @Builder.Default
     private Integer durationYears = 4;
 

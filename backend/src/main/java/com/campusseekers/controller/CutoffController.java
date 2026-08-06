@@ -3,6 +3,11 @@ package com.campusseekers.controller;
 import com.campusseekers.dto.ApiResponse;
 import com.campusseekers.dto.CutoffRequest;
 import com.campusseekers.dto.CutoffResponse;
+import com.campusseekers.dto.CutoffSearchResponse;
+import com.campusseekers.dto.PageResponse;
+import com.campusseekers.entity.Category;
+import com.campusseekers.entity.ExamName;
+import com.campusseekers.service.CutoffSearchService;
 import com.campusseekers.service.CutoffService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,17 +15,16 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,15 +35,66 @@ import java.util.UUID;
 public class CutoffController {
 
     private final CutoffService cutoffService;
+    private final CutoffSearchService cutoffSearchService;
+
+    private Pageable createPageable(int page, int size, String sort, String direction) {
+        if (page < 0) {
+            throw new IllegalArgumentException("Page index must not be less than zero");
+        }
+        if (size <= 0) {
+            throw new IllegalArgumentException("Page size must be greater than zero");
+        }
+
+        List<Sort.Order> orders = new ArrayList<>();
+        if (sort != null && !sort.isBlank()) {
+            String[] sortProperties = sort.split(",");
+            String[] sortDirections = direction != null ? direction.split(",") : new String[0];
+            for (int i = 0; i < sortProperties.length; i++) {
+                String prop = sortProperties[i].trim();
+                Sort.Direction dir = Sort.Direction.ASC;
+                if (i < sortDirections.length) {
+                    String d = sortDirections[i].trim().toUpperCase();
+                    if ("DESC".equals(d)) {
+                        dir = Sort.Direction.DESC;
+                    }
+                } else if (sortDirections.length > 0) {
+                    String d = sortDirections[0].trim().toUpperCase();
+                    if ("DESC".equals(d)) {
+                        dir = Sort.Direction.DESC;
+                    }
+                }
+                orders.add(new Sort.Order(dir, prop));
+            }
+        }
+        Sort finalSort = orders.isEmpty() ? Sort.unsorted() : Sort.by(orders);
+        return PageRequest.of(page, size, finalSort);
+    }
 
     @GetMapping("/api/cutoffs")
     @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
-    @Operation(summary = "Get list of all cutoff records", description = "Returns all cutoff entries. Accessible by students and admins.")
-    public ResponseEntity<ApiResponse<List<CutoffResponse>>> getAllCutoffs() {
-        List<CutoffResponse> response = cutoffService.getAllCutoffs();
-        return ResponseEntity.ok(ApiResponse.<List<CutoffResponse>>builder()
+    @Operation(summary = "Search cutoffs", description = "Search cutoffs matching dynamic criteria combinations")
+    public ResponseEntity<ApiResponse<PageResponse<CutoffSearchResponse>>> getCutoffs(
+            @RequestParam(required = false) ExamName exam,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer round,
+            @RequestParam(required = false) Category category,
+            @RequestParam(required = false) String rawSeatType,
+            @RequestParam(required = false) String college,
+            @RequestParam(required = false) String branch,
+            @RequestParam(required = false) Integer minRank,
+            @RequestParam(required = false) Integer maxRank,
+            @RequestParam(required = false) BigDecimal minPercentile,
+            @RequestParam(required = false) BigDecimal maxPercentile,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String direction) {
+
+        Pageable pageable = createPageable(page, size, sort, direction);
+        PageResponse<CutoffSearchResponse> response = cutoffSearchService.searchCutoffs(exam, year, round, category, rawSeatType, college, branch, minRank, maxRank, minPercentile, maxPercentile, pageable);
+        return ResponseEntity.ok(ApiResponse.<PageResponse<CutoffSearchResponse>>builder()
                 .success(true)
-                .message("Cutoff records retrieved successfully")
+                .message("Cutoffs retrieved successfully.")
                 .data(response)
                 .build());
     }

@@ -4,6 +4,7 @@ import com.campusseekers.dto.CollegeRequest;
 import com.campusseekers.dto.CollegeResponse;
 import com.campusseekers.entity.CollegeStatus;
 import com.campusseekers.entity.CollegeType;
+import com.campusseekers.service.CollegeSearchService;
 import com.campusseekers.service.CollegeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,9 @@ class CollegeControllerIntegrationTest {
     @MockBean
     private CollegeService collegeService;
 
+    @MockBean
+    private CollegeSearchService collegeSearchService;
+
     @Test
     void getEndpoints_ShouldReturnUnauthorized_WhenTokenIsMissing() throws Exception {
         mockMvc.perform(get("/api/colleges"))
@@ -48,23 +52,24 @@ class CollegeControllerIntegrationTest {
     @Test
     @WithMockUser(username = "student@example.com", roles = "STUDENT")
     void getColleges_ShouldReturnList_WhenStudent() throws Exception {
-        CollegeResponse mockResponse = CollegeResponse.builder()
+        com.campusseekers.dto.CollegeListResponse mockResponse = com.campusseekers.dto.CollegeListResponse.builder()
                 .id(UUID.randomUUID())
                 .name("COEP")
                 .collegeCode("COEP001")
                 .collegeType(CollegeType.GOVERNMENT)
-                .establishmentYear(1854)
                 .city("Pune")
                 .state("Maharashtra")
-                .status(CollegeStatus.ACTIVE)
                 .build();
 
-        when(collegeService.getAllColleges()).thenReturn(List.of(mockResponse));
+        com.campusseekers.dto.PageResponse<com.campusseekers.dto.CollegeListResponse> mockPage = com.campusseekers.dto.PageResponse.from(
+                new org.springframework.data.domain.PageImpl<>(List.of(mockResponse))
+        );
+        when(collegeSearchService.searchColleges(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(mockPage);
 
         mockMvc.perform(get("/api/colleges"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data[0].name").value("COEP"));
+                .andExpect(jsonPath("$.data.content[0].name").value("COEP"));
     }
 
     @Test

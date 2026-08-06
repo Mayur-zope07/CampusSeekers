@@ -40,24 +40,20 @@ public class College extends BaseEntity {
     @Column(name = "college_code", unique = true, nullable = false, length = 50)
     private String collegeCode;
 
-    @NotNull(message = "College type is required")
-    @Column(name = "college_type", nullable = false, length = 50)
+    @Column(name = "college_type", length = 50)
     @Enumerated(EnumType.STRING)
     private CollegeType collegeType;
 
-    @NotNull(message = "Establishment year is required")
     @Min(value = 1800, message = "Establishment year must be realistic")
-    @Column(name = "establishment_year", nullable = false)
+    @Column(name = "establishment_year")
     private Integer establishmentYear;
 
-    @NotBlank(message = "City is required")
     @Size(max = 100, message = "City cannot exceed 100 characters")
-    @Column(name = "city", nullable = false, length = 100)
+    @Column(name = "city", length = 100)
     private String city;
 
-    @NotBlank(message = "State is required")
     @Size(max = 100, message = "State cannot exceed 100 characters")
-    @Column(name = "state", nullable = false, length = 100)
+    @Column(name = "state", length = 100)
     private String state;
 
     @Size(max = 255, message = "Website URL cannot exceed 255 characters")

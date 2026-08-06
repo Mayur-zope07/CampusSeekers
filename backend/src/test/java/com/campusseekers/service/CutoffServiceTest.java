@@ -6,7 +6,6 @@ import com.campusseekers.entity.Category;
 import com.campusseekers.entity.CollegeBranch;
 import com.campusseekers.entity.Cutoff;
 import com.campusseekers.entity.ExamName;
-import com.campusseekers.entity.SeatType;
 import com.campusseekers.exception.DuplicateResourceException;
 import com.campusseekers.exception.ResourceNotFoundException;
 import com.campusseekers.mapper.CutoffMapper;
@@ -60,7 +59,7 @@ class CutoffServiceTest {
                 .year(2026)
                 .round(1)
                 .category(Category.OPEN)
-                .seatType(SeatType.GOPENS)
+                .rawSeatType("GOPENS")
                 .closingRank(1250)
                 .closingPercentile(new BigDecimal("98.45"))
                 .build();
@@ -72,7 +71,7 @@ class CutoffServiceTest {
                 .year(2026)
                 .round(1)
                 .category(Category.OPEN)
-                .seatType(SeatType.GOPENS)
+                .rawSeatType("GOPENS")
                 .closingRank(1250)
                 .closingPercentile(new BigDecimal("98.45"))
                 .build();
@@ -86,7 +85,7 @@ class CutoffServiceTest {
                 .year(2026)
                 .round(1)
                 .category(Category.OPEN)
-                .seatType(SeatType.GOPENS)
+                .rawSeatType("GOPENS")
                 .closingRank(1250)
                 .closingPercentile(new BigDecimal("98.45"))
                 .build();
@@ -95,8 +94,8 @@ class CutoffServiceTest {
     @Test
     void createCutoff_ShouldSaveCutoff_WhenUnique() {
         when(collegeBranchRepository.findById(mockMapping.getId())).thenReturn(Optional.of(mockMapping));
-        when(cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndSeatType(
-                mockMapping.getId(), ExamName.MHT_CET, 2026, 1, Category.OPEN, SeatType.GOPENS)).thenReturn(false);
+        when(cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatType(
+                mockMapping.getId(), ExamName.MHT_CET, 2026, 1, Category.OPEN, "GOPENS")).thenReturn(false);
         when(cutoffMapper.toEntity(mockRequest)).thenReturn(mockCutoff);
         when(cutoffRepository.save(mockCutoff)).thenReturn(mockCutoff);
         when(cutoffMapper.toResponse(mockCutoff)).thenReturn(mockResponse);
@@ -111,8 +110,8 @@ class CutoffServiceTest {
     @Test
     void createCutoff_ShouldThrowException_WhenDuplicate() {
         when(collegeBranchRepository.findById(mockMapping.getId())).thenReturn(Optional.of(mockMapping));
-        when(cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndSeatType(
-                mockMapping.getId(), ExamName.MHT_CET, 2026, 1, Category.OPEN, SeatType.GOPENS)).thenReturn(true);
+        when(cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatType(
+                mockMapping.getId(), ExamName.MHT_CET, 2026, 1, Category.OPEN, "GOPENS")).thenReturn(true);
 
         assertThrows(DuplicateResourceException.class, () -> cutoffService.createCutoff(mockRequest));
         verify(cutoffRepository, never()).save(any());

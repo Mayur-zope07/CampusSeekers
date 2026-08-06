@@ -2,7 +2,7 @@ package com.campusseekers.dto;
 
 import com.campusseekers.entity.Category;
 import com.campusseekers.entity.ExamName;
-import com.campusseekers.entity.SeatType;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -38,8 +38,8 @@ public class CutoffRequest {
     @NotNull(message = "Category is required")
     private Category category;
 
-    @NotNull(message = "Seat type is required")
-    private SeatType seatType;
+    @NotBlank(message = "Seat type is required")
+    private String rawSeatType;
 
     @NotNull(message = "Closing rank is required")
     @Positive(message = "Closing rank must be positive")

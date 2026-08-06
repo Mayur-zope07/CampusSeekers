@@ -31,8 +31,8 @@ public class CutoffServiceImpl implements CutoffService {
         CollegeBranch collegeBranch = collegeBranchRepository.findById(request.getCollegeBranchId())
                 .orElseThrow(() -> new ResourceNotFoundException("College-Branch mapping not found with ID: " + request.getCollegeBranchId()));
 
-        if (cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndSeatType(
-                request.getCollegeBranchId(), request.getExamName(), request.getYear(), request.getRound(), request.getCategory(), request.getSeatType())) {
+        if (cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatType(
+                request.getCollegeBranchId(), request.getExamName(), request.getYear(), request.getRound(), request.getCategory(), request.getRawSeatType())) {
             throw new DuplicateResourceException("Cutoff record already exists for the given combination of College-Branch, Exam, Year, Round, Category, and Seat Type");
         }
 
@@ -58,10 +58,10 @@ public class CutoffServiceImpl implements CutoffService {
                 || !cutoff.getYear().equals(request.getYear())
                 || !cutoff.getRound().equals(request.getRound())
                 || !cutoff.getCategory().equals(request.getCategory())
-                || !cutoff.getSeatType().equals(request.getSeatType());
+                || !cutoff.getRawSeatType().equals(request.getRawSeatType());
 
-        if (hasChanged && cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndSeatType(
-                request.getCollegeBranchId(), request.getExamName(), request.getYear(), request.getRound(), request.getCategory(), request.getSeatType())) {
+        if (hasChanged && cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatType(
+                request.getCollegeBranchId(), request.getExamName(), request.getYear(), request.getRound(), request.getCategory(), request.getRawSeatType())) {
             throw new DuplicateResourceException("Cutoff record already exists for the given combination of College-Branch, Exam, Year, Round, Category, and Seat Type");
         }
 

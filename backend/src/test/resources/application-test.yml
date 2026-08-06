@@ -12,3 +12,14 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: false
+
+import:
+  batch-size: 500
+  dry-run-default: false
+  max-file-size: 10485760
+  paths:
+    colleges: "../data/final/colleges/colleges.csv"
+    branches: "../data/final/branches/branches.csv"
+    college-branches: "../data/final/college_branches/college_branches.csv"
+    cutoffs: "../data/final/cutoffs/cutoffs.csv"
+    seat-matrix: "../data/final/seat_matrix/seat_matrix.csv"

@@ -8,6 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
@@ -49,10 +50,9 @@ public class Cutoff extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @NotNull(message = "Seat type is required")
+    @NotBlank(message = "Seat type is required")
     @Column(name = "seat_type", nullable = false, length = 50)
-    @Enumerated(EnumType.STRING)
-    private SeatType seatType;
+    private String rawSeatType;
 
     @NotNull(message = "Closing rank is required")
     @PositiveOrZero(message = "Closing rank must be positive or zero")

@@ -2,7 +2,6 @@ package com.campusseekers.dto;
 
 import com.campusseekers.entity.Category;
 import com.campusseekers.entity.ExamName;
-import com.campusseekers.entity.SeatType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +24,7 @@ public class CutoffResponse {
     private Integer year;
     private Integer round;
     private Category category;
-    private SeatType seatType;
+    private String rawSeatType;
     private Integer closingRank;
     private BigDecimal closingPercentile;
     private Instant createdAt;
