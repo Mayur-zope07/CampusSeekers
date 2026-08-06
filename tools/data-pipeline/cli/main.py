@@ -1,11 +1,12 @@
 import argparse
+import pandas as pd
 import sys
 import time
 import json
 from pathlib import Path
 
 # Add the parent folder to the system path to allow importing sibling modules when running directly
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from utils import setup_logging, ensure_directory
 from config.config import settings
@@ -42,6 +43,46 @@ def run_cutoff_extraction_2025():
         df.to_csv(output_path, index=False, encoding="utf-8")
         logger.info("CSV generation complete.")
         print(f"CSV generated successfully at: {output_path}")
+        
+        # Also clean, validate and save to data/final/cutoffs/cutoffs_2025_final.csv
+        final_dir = repo_root / "data" / "final" / "cutoffs"
+        ensure_directory(final_dir)
+        final_path = final_dir / "cutoffs_2025_final.csv"
+        
+        import re
+        valid_rows = []
+        skipped_count = 0
+        for idx, row in df.iterrows():
+            col_code = str(row["College Code"]).strip()
+            br_code = str(row["Branch Code"]).strip()
+            rank = row["Closing Rank"]
+            pct = row["Closing Percentile"]
+            
+            is_valid = True
+            if not re.match(r"^\d{5}$", col_code):
+                is_valid = False
+            if not (9 <= len(br_code) <= 10):
+                is_valid = False
+            try:
+                if int(rank) <= 0:
+                    is_valid = False
+            except (ValueError, TypeError):
+                is_valid = False
+            try:
+                if not (0.0 <= float(pct) <= 100.0):
+                    is_valid = False
+            except (ValueError, TypeError):
+                is_valid = False
+                
+            if is_valid:
+                valid_rows.append(row)
+            else:
+                skipped_count += 1
+                
+        valid_df = pd.DataFrame(valid_rows)
+        logger.info(f"Saving final cutoffs to {final_path} (skipped {skipped_count} invalid rows)")
+        valid_df.to_csv(final_path, index=False, encoding="utf-8")
+        print(f"Validated final CSV generated successfully at: {final_path} (skipped {skipped_count} invalid rows)")
         
     except Exception as e:
         logger.error(f"Table extraction failure: {str(e)}", exc_info=True)
@@ -130,7 +171,7 @@ def main():
     )
     
     # Support top-level optional flags for Phase 1 & 2 success criteria
-    parser.add_argument("--type", choices=["cutoff", "seatmatrix", "seat_matrix"], help="Type of pipeline to run")
+    parser.add_argument("--type", choices=["cutoff", "seatmatrix", "seat_matrix", "generate-datasets"], help="Type of pipeline to run")
     parser.add_argument("--year", type=int, help="Target year for extraction")
     parser.add_argument("--input", type=str, help="Path to input PDF file (required for seat matrix)")
     
@@ -163,6 +204,45 @@ def main():
             print("Error: --year <year> is required when --type seatmatrix is specified.")
             sys.exit(1)
         run_seat_matrix_extraction(args.input, args.year)
+    elif args.type == "generate-datasets":
+        if not args.year:
+            print("Error: --year <year> is required when --type generate-datasets is specified.")
+            sys.exit(1)
+        
+        from transformers.dataset_generator import DatasetGenerator
+        try:
+            generator = DatasetGenerator(args.year)
+            summary = generator.generate()
+            
+            print(f"[SUCCESS] colleges.csv")
+            print(f"[SUCCESS] branches.csv")
+            print(f"[SUCCESS] college_branches.csv")
+            print(f"[SUCCESS] cutoffs.csv")
+            print(f"[SUCCESS] seat_matrix.csv")
+            print(f"[SUCCESS] college_lookup.csv")
+            print(f"[SUCCESS] dataset_metadata.json")
+            
+            print("\n" + "="*50)
+            print("DATASET GENERATION SUMMARY")
+            print("="*50)
+            print(f"Total Colleges:             {summary['total_colleges']}")
+            print(f"Total Branches:             {summary['total_branches']}")
+            print(f"Total College Branches:     {summary['total_college_branches']}")
+            print(f"Total Cutoffs:              {summary['total_cutoffs']}")
+            print(f"Total Seat Matrix Records:  {summary['total_seat_matrix_records']}")
+            print(f"Rows Skipped:               {summary['rows_skipped']}")
+            print(f"Duplicate Rows Removed:     {summary['duplicate_rows_removed']}")
+            print(f"Validation Errors:          {summary['validation_errors_count']}")
+            print(f"Execution Time:             {summary['execution_time']:.2f} seconds")
+            print("="*50)
+            
+        except FileNotFoundError as fnf:
+            print(f"Error: {fnf}")
+            sys.exit(1)
+        except Exception as e:
+            logger.error(f"Dataset generation failed: {e}", exc_info=True)
+            print(f"Error during dataset generation process: {e}")
+            sys.exit(1)
     elif args.command:
         try:
             args.func(args)

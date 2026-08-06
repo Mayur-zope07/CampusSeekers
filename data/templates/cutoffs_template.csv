@@ -1,1 +1,1 @@
-college_code,branch_code,exam_name,year,round,category,seat_type,closing_rank,closing_percentile
+college_code,branch_code,exam_name,year,round,category,raw_seat_type,closing_rank,closing_percentile
