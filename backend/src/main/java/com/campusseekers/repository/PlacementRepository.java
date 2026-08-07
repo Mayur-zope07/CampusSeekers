@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,4 +15,7 @@ public interface PlacementRepository extends JpaRepository<Placement, UUID>, Jpa
     List<Placement> findByCollegeIdAndYear(UUID collegeId, Integer year);
     List<Placement> findByCollegeIdOrderByYearDesc(UUID collegeId);
     boolean existsByCollegeIdAndYear(UUID collegeId, Integer year);
+
+    List<Placement> findByCollegeIdIn(Collection<UUID> collegeIds);
 }
+

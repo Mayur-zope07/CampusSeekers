@@ -6,6 +6,7 @@ import com.campusseekers.entity.ExamName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,4 +29,18 @@ public interface CutoffRepository extends JpaRepository<Cutoff, UUID>, JpaSpecif
             Category category,
             String rawSeatType
     );
+
+    @Query("SELECT DISTINCT c FROM Cutoff c " +
+           "JOIN FETCH c.collegeBranch cb " +
+           "JOIN FETCH cb.college col " +
+           "JOIN FETCH cb.branch b " +
+           "WHERE c.examName = :examName " +
+           "AND c.year = :year " +
+           "AND c.category = :category")
+    List<Cutoff> findCutoffsForRecommendation(
+            @Param("examName") ExamName examName,
+            @Param("year") Integer year,
+            @Param("category") Category category
+    );
 }
+

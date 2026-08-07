@@ -60,3 +60,14 @@ import:
     college-branches: "../data/final/college_branches/college_branches.csv"
     cutoffs: "../data/final/cutoffs/cutoffs.csv"
     seat-matrix: "../data/final/seat_matrix/seat_matrix.csv"
+
+recommendation:
+  safe-threshold: 3.0
+  target-threshold: 1.5
+  dream-threshold: 0.0
+  maximum-results: 50
+  maximum-allowed-results: 100
+  cache-minutes: 10
+  engine-version: "1.0"
+  algorithm-version: "historical-cutoff-v1"
+
