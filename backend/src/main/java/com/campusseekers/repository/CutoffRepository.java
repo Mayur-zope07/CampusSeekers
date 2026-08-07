@@ -21,6 +21,7 @@ public interface CutoffRepository extends JpaRepository<Cutoff, UUID>, JpaSpecif
     List<Cutoff> findByCollegeBranchId(UUID collegeBranchId);
     List<Cutoff> findByCollegeBranchIdAndYear(UUID collegeBranchId, Integer year);
     List<Cutoff> findByCollegeBranchIdOrderByYearDesc(UUID collegeBranchId);
+    List<Cutoff> findByCollegeBranchIdIn(List<UUID> collegeBranchIds);
     boolean existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatType(
             UUID collegeBranchId,
             ExamName examName,
