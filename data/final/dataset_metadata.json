@@ -1,11 +1,11 @@
 {
-  "generation_timestamp": "2026-08-06T13:29:05.467120+00:00",
+  "generation_timestamp": "2026-08-10T10:11:01.929047+00:00",
   "input_files": [
     "data\\final\\cutoffs\\cutoffs_2025_final.csv",
     "data\\final\\seat_matrix\\seat_matrix_2025_final.csv"
   ],
   "rows_processed": {
-    "cutoffs": 13745,
+    "cutoffs": 13584,
     "seat_matrix": 2136
   },
   "rows_skipped": {
@@ -13,20 +13,20 @@
     "seat_matrix": 0
   },
   "duplicate_rows_removed": {
-    "colleges": 15509,
-    "branches": 13729,
+    "colleges": 15354,
+    "branches": 13568,
     "college_branches": 0,
     "cutoffs": 0,
     "seat_matrix": 0
   },
-  "execution_time_seconds": 2.8280770778656006,
+  "execution_time_seconds": 3.481229543685913,
   "final_counts": {
-    "colleges": 372,
+    "colleges": 366,
     "branches": 2152,
-    "college_branches": 2158,
-    "cutoffs": 13745,
+    "college_branches": 2152,
+    "cutoffs": 13584,
     "seat_matrix": 2136,
-    "college_lookup": 372
+    "college_lookup": 366
   },
   "validation_errors": []
 }

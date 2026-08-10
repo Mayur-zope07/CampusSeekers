@@ -20,7 +20,7 @@ logger = logging.getLogger("data_pipeline.extractors.cutoff")
 
 # Compile regular expressions for matching headers and cutoff values
 COLLEGE_PATTERN = re.compile(r"^(\d{5})\s*-\s*(.+)$")
-BRANCH_PATTERN = re.compile(r"^(\d{9,10})\s*-\s*(.+)$")
+BRANCH_PATTERN = re.compile(r"^(\d{9,10}[a-zA-Z]?)\s*-\s*(.+)$")
 CUTOFF_PATTERN = re.compile(r"^(\d+)\s*\(\s*([\d\.]+)\s*\)$")
 
 def parse_category(seat_type: str) -> str:
@@ -202,6 +202,21 @@ class CutoffExtractor:
                 for t in tables:
                     table_top = t.bbox[1]
                     
+                    # Search text lines backwards from table_top to find section context
+                    section_suffix = ""
+                    for top in sorted(lines.keys(), reverse=True):
+                        if top < table_top:
+                            line_words = sorted(lines[top], key=lambda x: x['x0'])
+                            line_text = " ".join([w['text'] for w in line_words]).strip()
+                            if "Seats Allotted to" in line_text or "State Level Seats" in line_text:
+                                if "Allotted to Home University Candidates" in line_text:
+                                    section_suffix = "-HU"
+                                elif "Allotted to Other Than Home University Candidates" in line_text:
+                                    section_suffix = "-OHU"
+                                elif "State Level Seats" in line_text:
+                                    section_suffix = "-SL"
+                                break
+                    
                     # Update local state machine for headers above this table on this page
                     # Find closest branch header above this table
                     assoc_branch = None
@@ -273,6 +288,8 @@ class CutoffExtractor:
                                     closing_rank = int(rank_str)
                                     closing_percentile = float(pct_str)
                                     category = parse_category(seat_type)
+                                    stage_val = str(row_header).strip().replace("\n", " ") if row_header else "I"
+                                    normalized_stage = stage_val + section_suffix
                                     
                                     records.append({
                                         "College Code": current_college_code,
@@ -283,6 +300,7 @@ class CutoffExtractor:
                                         "Round": 4,
                                         "Category": category,
                                         "Seat Type": seat_type.strip().replace("\n", ""),
+                                        "Stage": normalized_stage,
                                         "Closing Rank": closing_rank,
                                         "Closing Percentile": closing_percentile
                                     })

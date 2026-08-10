@@ -2,8 +2,9 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Compass, Sparkles, FolderHeart, Milestone, Settings } from "lucide-react";
+import { LayoutDashboard, Compass, Sparkles, FolderHeart, Milestone, Settings, Briefcase, UserCircle } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { useRouter } from "next/navigation";
 
 export interface SidebarItem {
     id: string;
@@ -18,13 +19,26 @@ interface SidebarProps {
 }
 
 export function Sidebar({ activeItem, onChange, className }: SidebarProps) {
+    const router = useRouter();
     const items: SidebarItem[] = [
-        { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
-        { id: "explore", label: "Explore Colleges", icon: <Compass className="w-4 h-4" /> },
-        { id: "recommendations", label: "Smart Matches", icon: <Sparkles className="w-4 h-4" /> },
-        { id: "wishlist", label: "My Wishlist", icon: <FolderHeart className="w-4 h-4" /> },
-        { id: "admission", label: "Admission Journey", icon: <Milestone className="w-4 h-4" /> },
+        { id: "dashboard",       label: "Dashboard",         icon: <LayoutDashboard className="w-4 h-4" /> },
+        { id: "explore",         label: "Explore Colleges",  icon: <Compass className="w-4 h-4" /> },
+        { id: "recommendations", label: "Smart Matches",     icon: <Sparkles className="w-4 h-4" /> },
+        { id: "workspace",       label: "My Workspace",      icon: <Briefcase className="w-4 h-4" /> },
+        { id: "wishlist",        label: "My Wishlist",       icon: <FolderHeart className="w-4 h-4" /> },
+        { id: "admission",       label: "Admission Journey", icon: <Milestone className="w-4 h-4" /> },
+        { id: "profile",         label: "My Profile",        icon: <UserCircle className="w-4 h-4" /> },
     ];
+
+    const ROUTES: Record<string, string> = {
+        dashboard:       "/app/dashboard",
+        explore:         "/app/search",
+        recommendations: "/app/recommendations",
+        workspace:       "/app/workspace",
+        wishlist:        "/app/workspace/wishlist",
+        admission:       "/app/workspace/tracker",
+        profile:         "/app/profile",
+    };
 
     return (
         <aside className={cn("hidden md:flex flex-col h-screen w-64 glass-sidebar fixed left-0 top-0 pt-24 pb-8 px-4 justify-between z-30", className)}>
@@ -34,7 +48,7 @@ export function Sidebar({ activeItem, onChange, className }: SidebarProps) {
                     return (
                         <button
                             key={item.id}
-                            onClick={() => onChange(item.id)}
+                            onClick={() => { onChange(item.id); const route = ROUTES[item.id]; if (route) router.push(route); }}
                             className={cn(
                                 "relative flex items-center gap-3 px-4 py-3 text-xs font-semibold select-none rounded-sm transition-colors cursor-pointer w-full text-left",
                                 isActive ? "text-black" : "text-text-secondary hover:text-white"

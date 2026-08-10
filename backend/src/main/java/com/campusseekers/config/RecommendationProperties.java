@@ -50,4 +50,7 @@ public class RecommendationProperties {
 
     @NotBlank(message = "algorithm-version must not be blank")
     private String algorithmVersion = "historical-cutoff-v1";
+
+    @NotBlank(message = "fallback-selection-policy must not be blank")
+    private String fallbackSelectionPolicy = "HIGHEST_PERCENTILE";
 }

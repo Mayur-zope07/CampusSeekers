@@ -31,9 +31,9 @@ public class CutoffServiceImpl implements CutoffService {
         CollegeBranch collegeBranch = collegeBranchRepository.findById(request.getCollegeBranchId())
                 .orElseThrow(() -> new ResourceNotFoundException("College-Branch mapping not found with ID: " + request.getCollegeBranchId()));
 
-        if (cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatType(
-                request.getCollegeBranchId(), request.getExamName(), request.getYear(), request.getRound(), request.getCategory(), request.getRawSeatType())) {
-            throw new DuplicateResourceException("Cutoff record already exists for the given combination of College-Branch, Exam, Year, Round, Category, and Seat Type");
+        if (cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatTypeAndStage(
+                request.getCollegeBranchId(), request.getExamName(), request.getYear(), request.getRound(), request.getCategory(), request.getRawSeatType(), request.getStage())) {
+            throw new DuplicateResourceException("Cutoff record already exists for the given combination of College-Branch, Exam, Year, Round, Category, Seat Type, and Stage");
         }
 
         Cutoff cutoff = cutoffMapper.toEntity(request);
@@ -58,11 +58,12 @@ public class CutoffServiceImpl implements CutoffService {
                 || !cutoff.getYear().equals(request.getYear())
                 || !cutoff.getRound().equals(request.getRound())
                 || !cutoff.getCategory().equals(request.getCategory())
-                || !cutoff.getRawSeatType().equals(request.getRawSeatType());
+                || !cutoff.getRawSeatType().equals(request.getRawSeatType())
+                || !cutoff.getStage().equals(request.getStage());
 
-        if (hasChanged && cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatType(
-                request.getCollegeBranchId(), request.getExamName(), request.getYear(), request.getRound(), request.getCategory(), request.getRawSeatType())) {
-            throw new DuplicateResourceException("Cutoff record already exists for the given combination of College-Branch, Exam, Year, Round, Category, and Seat Type");
+        if (hasChanged && cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatTypeAndStage(
+                request.getCollegeBranchId(), request.getExamName(), request.getYear(), request.getRound(), request.getCategory(), request.getRawSeatType(), request.getStage())) {
+            throw new DuplicateResourceException("Cutoff record already exists for the given combination of College-Branch, Exam, Year, Round, Category, Seat Type, and Stage");
         }
 
         cutoffMapper.updateCutoffFromRequest(request, cutoff);

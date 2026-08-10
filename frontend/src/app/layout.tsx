@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { ToastProvider } from "@/providers/ToastProvider";
+import { AuthProvider } from "@/providers/AuthProvider";
 import { LenisProvider } from "@/providers/LenisProvider";
 import { CustomCursor } from "@/components/animations/CustomCursor";
 
@@ -33,11 +34,13 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeProvider>
             <ToastProvider>
-              <LenisProvider>
-                <CustomCursor />
-                <div className="noise-overlay" />
-                {children}
-              </LenisProvider>
+              <AuthProvider>
+                <LenisProvider>
+                  <CustomCursor />
+                  <div className="noise-overlay" />
+                  {children}
+                </LenisProvider>
+              </AuthProvider>
             </ToastProvider>
           </ThemeProvider>
         </QueryProvider>

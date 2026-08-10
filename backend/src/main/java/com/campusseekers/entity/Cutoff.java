@@ -54,6 +54,10 @@ public class Cutoff extends BaseEntity {
     @Column(name = "seat_type", nullable = false, length = 50)
     private String rawSeatType;
 
+    @NotBlank(message = "Stage is required")
+    @Column(name = "stage", nullable = false, length = 50)
+    private String stage;
+
     @NotNull(message = "Closing rank is required")
     @PositiveOrZero(message = "Closing rank must be positive or zero")
     @Column(name = "closing_rank", nullable = false)

@@ -14,6 +14,7 @@ import com.campusseekers.repository.*;
 import com.campusseekers.service.RecommendationCacheService;
 import com.campusseekers.service.RecommendationEngine;
 import com.campusseekers.service.RecommendationService;
+import com.campusseekers.service.RecommendationCutoffSelector;
 import com.campusseekers.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     private final RecommendationEngine recommendationEngine;
     private final RecommendationProperties properties;
     private final ApplicationEventPublisher eventPublisher;
+    private final RecommendationCutoffSelector cutoffSelector;
 
     @Override
     @Transactional
@@ -73,12 +75,13 @@ public class RecommendationServiceImpl implements RecommendationService {
         }
 
         // 2. Load candidate cutoffs
-        List<Cutoff> cutoffs = cutoffRepository.findCutoffsForRecommendation(
+        List<Cutoff> rawCutoffs = cutoffRepository.findCutoffsForRecommendation(
                 request.exam(),
                 request.year(),
                 request.category()
         );
-        int evaluatedCount = cutoffs.size();
+        List<Cutoff> cutoffs = cutoffSelector.selectRepresentativeCutoffs(rawCutoffs);
+        int evaluatedCount = rawCutoffs.size();
 
         // 3. Load placements bulk
         List<UUID> collegeIds = cutoffs.stream()

@@ -98,6 +98,10 @@ public class BulkImportOrchestratorService {
         Set<String> colleges = new HashSet<>();
         Set<String> branches = new HashSet<>();
         Set<String> collegeBranches = new HashSet<>();
+        
+        Set<String> collegesInCsv = new HashSet<>();
+        Set<String> branchesInCsv = new HashSet<>();
+        Set<String> collegeBranchesInCsv = new HashSet<>();
 
         // Load existing entities into maps to validate relationships against current DB state
         collegeRepository.findAll().forEach(c -> colleges.add(c.getCollegeCode()));
@@ -113,11 +117,12 @@ public class BulkImportOrchestratorService {
                     String code = record.get("college_code");
                     if (code != null && !code.isBlank()) {
                         code = code.trim();
-                        if (!colleges.add(code)) {
+                        if (!collegesInCsv.add(code)) {
                             // If replaceExisting is true, duplicates inside the CSV are still errors.
                             // If replaceExisting is false, we skip duplicate keys relative to DB, but duplicates inside CSV are still invalid.
                             throw new IllegalArgumentException("Duplicate college code inside CSV: " + code);
                         }
+                        colleges.add(code);
                     }
                 }
             }
@@ -128,9 +133,10 @@ public class BulkImportOrchestratorService {
                     String code = record.get("branch_code");
                     if (code != null && !code.isBlank()) {
                         code = code.trim();
-                        if (!branches.add(code)) {
+                        if (!branchesInCsv.add(code)) {
                             throw new IllegalArgumentException("Duplicate branch code inside CSV: " + code);
                         }
+                        branches.add(code);
                     }
                 }
             }
@@ -148,14 +154,15 @@ public class BulkImportOrchestratorService {
                     if (!branches.contains(br)) {
                         throw new IllegalArgumentException("Referential Integrity Failure in College Branches: Branch code " + br + " not found");
                     }
-                    if (!collegeBranches.add(key)) {
+                    if (!collegeBranchesInCsv.add(key)) {
                         throw new IllegalArgumentException("Duplicate college branch mapping inside CSV: " + key);
                     }
+                    collegeBranches.add(key);
                 }
             }
 
             // Validate Cutoffs CSV
-            try (CSVParser parser = csvImportService.parseCsv(cutoffsPath, new String[]{"college_code", "branch_code", "exam_name", "year", "round", "category", "raw_seat_type"}, maxFileSize)) {
+            try (CSVParser parser = csvImportService.parseCsv(cutoffsPath, new String[]{"college_code", "branch_code", "exam_name", "year", "round", "category", "raw_seat_type", "stage"}, maxFileSize)) {
                 Set<String> cutoffKeys = new HashSet<>();
                 for (CSVRecord record : parser) {
                     String col = record.get("college_code").trim();
@@ -166,7 +173,7 @@ public class BulkImportOrchestratorService {
                         throw new IllegalArgumentException("Referential Integrity Failure in Cutoffs: CollegeBranch " + cbKey + " not found");
                     }
 
-                    String key = cbKey + "|" + record.get("exam_name") + "|" + record.get("year") + "|" + record.get("round") + "|" + record.get("category") + "|" + record.get("raw_seat_type");
+                    String key = cbKey + "|" + record.get("exam_name") + "|" + record.get("year") + "|" + record.get("round") + "|" + record.get("category") + "|" + record.get("raw_seat_type") + "|" + record.get("stage");
                     if (!cutoffKeys.add(key)) {
                         throw new IllegalArgumentException("Duplicate cutoff record inside CSV: " + key);
                     }

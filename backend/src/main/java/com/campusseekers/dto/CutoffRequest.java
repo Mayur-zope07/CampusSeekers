@@ -41,6 +41,9 @@ public class CutoffRequest {
     @NotBlank(message = "Seat type is required")
     private String rawSeatType;
 
+    @NotBlank(message = "Stage is required")
+    private String stage;
+
     @NotNull(message = "Closing rank is required")
     @Positive(message = "Closing rank must be positive")
     private Integer closingRank;

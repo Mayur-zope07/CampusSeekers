@@ -88,6 +88,7 @@ class CutoffControllerIntegrationTest {
                 .round(1)
                 .category(Category.OPEN)
                 .rawSeatType("GOPENS")
+                .stage("I")
                 .closingRank(1250)
                 .closingPercentile(new BigDecimal("98.45"))
                 .build();
@@ -108,6 +109,7 @@ class CutoffControllerIntegrationTest {
                 .round(1)
                 .category(Category.OPEN)
                 .rawSeatType("GOPENS")
+                .stage("I")
                 .closingRank(1250)
                 .closingPercentile(new BigDecimal("98.45"))
                 .build();

@@ -54,6 +54,7 @@ public class CutoffImportMapper {
         }
 
         cutoff.setRawSeatType(dto.getRawSeatType() != null ? dto.getRawSeatType().trim() : null);
+        cutoff.setStage(dto.getStage() != null ? dto.getStage().trim() : null);
 
         if (dto.getClosingRank() != null && !dto.getClosingRank().isBlank()) {
             try {

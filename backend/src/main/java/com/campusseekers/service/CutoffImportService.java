@@ -36,7 +36,7 @@ public class CutoffImportService {
     private EntityManager entityManager;
 
     private static final String[] HEADERS = {
-            "college_code", "branch_code", "exam_name", "year", "round", "category", "raw_seat_type", "closing_rank", "closing_percentile"
+            "college_code", "branch_code", "exam_name", "year", "round", "category", "raw_seat_type", "stage", "closing_rank", "closing_percentile"
     };
 
     @Transactional
@@ -73,6 +73,7 @@ public class CutoffImportService {
                 String round = record.get("round");
                 String category = record.get("category");
                 String rawSeatType = record.get("raw_seat_type");
+                String stage = record.get("stage");
 
                 if (collegeCode == null || collegeCode.isBlank()) {
                     errors.add("Line " + (record.getRecordNumber() + 1) + ": College code is blank");
@@ -94,7 +95,7 @@ public class CutoffImportService {
                 }
 
                 // Check internal CSV duplicates
-                String duplicateKey = cbKey + "|" + examName + "|" + year + "|" + round + "|" + category + "|" + rawSeatType;
+                String duplicateKey = cbKey + "|" + examName + "|" + year + "|" + round + "|" + category + "|" + rawSeatType + "|" + stage;
                 if (!csvKeys.add(duplicateKey)) {
                     throw new IllegalArgumentException("Duplicate cutoff record inside CSV: " + duplicateKey);
                 }
@@ -107,6 +108,7 @@ public class CutoffImportService {
                         .round(round)
                         .category(category)
                         .rawSeatType(rawSeatType)
+                        .stage(stage)
                         .closingRank(record.get("closing_rank"))
                         .closingPercentile(record.get("closing_percentile"))
                         .build();
@@ -131,13 +133,14 @@ public class CutoffImportService {
                 boolean exists = false;
                 if (!replaceExisting && cb != null) {
                     try {
-                        exists = cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatType(
+                        exists = cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatTypeAndStage(
                                 cb.getId(),
                                 ExamName.valueOf(dto.getExamName().trim()),
                                 Integer.parseInt(dto.getYear().trim()),
                                 Integer.parseInt(dto.getRound().trim()),
                                 Category.valueOf(dto.getCategory().trim()),
-                                dto.getRawSeatType().trim()
+                                dto.getRawSeatType().trim(),
+                                dto.getStage().trim()
                         );
                     } catch (Exception e) {
                         // If parsing enums fails, it doesn't exist

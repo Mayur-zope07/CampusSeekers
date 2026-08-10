@@ -17,6 +17,7 @@ public class CutoffImportDto {
     private String round;
     private String category;
     private String rawSeatType;
+    private String stage;
     private String closingRank;
     private String closingPercentile;
 }

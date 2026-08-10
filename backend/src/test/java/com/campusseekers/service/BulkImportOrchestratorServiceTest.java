@@ -69,7 +69,7 @@ class BulkImportOrchestratorServiceTest {
         Files.writeString(colFile, "college_code\n1002");
         Files.writeString(brFile, "branch_code\n0100219110");
         Files.writeString(cbFile, "college_code,branch_code\n1002,0100219110");
-        Files.writeString(cutFile, "college_code,branch_code,exam_name,year,round,category,raw_seat_type\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS");
+        Files.writeString(cutFile, "college_code,branch_code,exam_name,year,round,category,raw_seat_type,stage\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS,I");
         Files.writeString(smFile, "college_code,branch_code,intake_capacity\n1002,0100219110,60");
 
         ReflectionTestUtils.setField(orchestratorService, "collegesPath", colFile.toString());
@@ -87,7 +87,7 @@ class BulkImportOrchestratorServiceTest {
         CSVParser colParser = new CSVParser(new StringReader("college_code\n1002"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
         CSVParser brParser = new CSVParser(new StringReader("branch_code\n0100219110"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
         CSVParser cbParser = new CSVParser(new StringReader("college_code,branch_code\n1002,0100219110"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
-        CSVParser cutParser = new CSVParser(new StringReader("college_code,branch_code,exam_name,year,round,category,raw_seat_type\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
+        CSVParser cutParser = new CSVParser(new StringReader("college_code,branch_code,exam_name,year,round,category,raw_seat_type,stage\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS,I"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
         CSVParser smParser = new CSVParser(new StringReader("college_code,branch_code,intake_capacity\n1002,0100219110,60"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
 
         when(csvImportService.parseCsv(anyString(), any(String[].class), anyLong()))
@@ -131,7 +131,7 @@ class BulkImportOrchestratorServiceTest {
         CSVParser colParser = new CSVParser(new StringReader("college_code\n1002"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
         CSVParser brParser = new CSVParser(new StringReader("branch_code\n0100219110"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
         CSVParser cbParser = new CSVParser(new StringReader("college_code,branch_code\n1002,0100219110"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
-        CSVParser cutParser = new CSVParser(new StringReader("college_code,branch_code,exam_name,year,round,category,raw_seat_type\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
+        CSVParser cutParser = new CSVParser(new StringReader("college_code,branch_code,exam_name,year,round,category,raw_seat_type,stage\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS,I"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
         CSVParser smParser = new CSVParser(new StringReader("college_code,branch_code,intake_capacity\n1002,0100219110,60"), CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
 
         when(csvImportService.parseCsv(anyString(), any(String[].class), anyLong()))

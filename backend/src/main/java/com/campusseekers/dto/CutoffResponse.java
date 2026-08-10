@@ -25,6 +25,7 @@ public class CutoffResponse {
     private Integer round;
     private Category category;
     private String rawSeatType;
+    private String stage;
     private Integer closingRank;
     private BigDecimal closingPercentile;
     private Instant createdAt;

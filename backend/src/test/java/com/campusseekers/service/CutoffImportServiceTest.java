@@ -55,9 +55,9 @@ class CutoffImportServiceTest {
     @Test
     void importCsv_ShouldImportSuccessfully_WhenCollegeBranchExists(@TempDir Path tempDir) throws IOException {
         Path file = tempDir.resolve("cutoffs.csv");
-        Files.writeString(file, "college_code,branch_code,exam_name,year,round,category,raw_seat_type,closing_rank,closing_percentile\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS,1250,98.45");
+        Files.writeString(file, "college_code,branch_code,exam_name,year,round,category,raw_seat_type,stage,closing_rank,closing_percentile\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS,I,1250,98.45");
 
-        CSVParser parser = new CSVParser(new StringReader("college_code,branch_code,exam_name,year,round,category,raw_seat_type,closing_rank,closing_percentile\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS,1250,98.45"), 
+        CSVParser parser = new CSVParser(new StringReader("college_code,branch_code,exam_name,year,round,category,raw_seat_type,stage,closing_rank,closing_percentile\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS,I,1250,98.45"), 
                 CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
 
         College college = new College();
@@ -73,7 +73,7 @@ class CutoffImportServiceTest {
 
         when(csvImportService.parseCsv(anyString(), any(String[].class), anyLong())).thenReturn(parser);
         when(collegeBranchRepository.findAll()).thenReturn(Collections.singletonList(cb));
-        when(cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatType(any(), any(), any(), any(), any(), any())).thenReturn(false);
+        when(cutoffRepository.existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatTypeAndStage(any(), any(), any(), any(), any(), any(), any())).thenReturn(false);
         when(cutoffMapper.toEntity(any(), any())).thenReturn(new Cutoff());
 
         ImportSummaryResponse response = cutoffImportService.importCsv(file.toString(), false, false, 1024, 5, null);
@@ -88,9 +88,9 @@ class CutoffImportServiceTest {
     @Test
     void importCsv_ShouldThrowException_WhenCollegeBranchNotFound(@TempDir Path tempDir) throws IOException {
         Path file = tempDir.resolve("cutoffs.csv");
-        Files.writeString(file, "college_code,branch_code,exam_name,year,round,category,raw_seat_type,closing_rank,closing_percentile\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS,1250,98.45");
+        Files.writeString(file, "college_code,branch_code,exam_name,year,round,category,raw_seat_type,stage,closing_rank,closing_percentile\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS,I,1250,98.45");
 
-        CSVParser parser = new CSVParser(new StringReader("college_code,branch_code,exam_name,year,round,category,raw_seat_type,closing_rank,closing_percentile\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS,1250,98.45"), 
+        CSVParser parser = new CSVParser(new StringReader("college_code,branch_code,exam_name,year,round,category,raw_seat_type,stage,closing_rank,closing_percentile\n1002,0100219110,MHT_CET,2025,1,OPEN,GOPENS,I,1250,98.45"), 
                 CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build());
 
         when(csvImportService.parseCsv(anyString(), any(String[].class), anyLong())).thenReturn(parser);

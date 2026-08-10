@@ -22,13 +22,14 @@ public interface CutoffRepository extends JpaRepository<Cutoff, UUID>, JpaSpecif
     List<Cutoff> findByCollegeBranchIdAndYear(UUID collegeBranchId, Integer year);
     List<Cutoff> findByCollegeBranchIdOrderByYearDesc(UUID collegeBranchId);
     List<Cutoff> findByCollegeBranchIdIn(List<UUID> collegeBranchIds);
-    boolean existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatType(
+    boolean existsByCollegeBranchIdAndExamNameAndYearAndRoundAndCategoryAndRawSeatTypeAndStage(
             UUID collegeBranchId,
             ExamName examName,
             Integer year,
             Integer round,
             Category category,
-            String rawSeatType
+            String rawSeatType,
+            String stage
     );
 
     @Query("SELECT DISTINCT c FROM Cutoff c " +

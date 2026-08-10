@@ -70,4 +70,5 @@ recommendation:
   cache-minutes: 10
   engine-version: "1.0"
   algorithm-version: "historical-cutoff-v1"
+  fallback-selection-policy: "HIGHEST_PERCENTILE"
 

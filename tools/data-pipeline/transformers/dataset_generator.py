@@ -90,13 +90,14 @@ class DatasetGenerator:
             round_num = row.get("Round")
             category = str(row.get("Category", "")).strip()
             seat_type = str(row.get("Seat Type", "")).strip()
+            stage = str(row.get("Stage", "I")).strip()
             closing_rank = row.get("Closing Rank")
             closing_percentile = row.get("Closing Percentile")
             
             is_valid = True
             if not re.match(r"^\d{5}$", col_code):
                 is_valid = False
-            if not (9 <= len(br_code) <= 10):
+            if not (9 <= len(br_code) <= 11):
                 is_valid = False
             try:
                 if int(closing_rank) <= 0:
@@ -120,6 +121,7 @@ class DatasetGenerator:
                     "round": int(round_num) if pd.notna(round_num) else 1,
                     "category": category,
                     "raw_seat_type": seat_type,
+                    "stage": stage,
                     "closing_rank": int(closing_rank),
                     "closing_percentile": float(closing_percentile)
                 })
@@ -137,7 +139,7 @@ class DatasetGenerator:
             is_valid = True
             if not re.match(r"^\d{5}$", col_code):
                 is_valid = False
-            if not (9 <= len(br_code) <= 10):
+            if not (9 <= len(br_code) <= 11):
                 is_valid = False
             try:
                 if int(intake) <= 0:
@@ -216,11 +218,10 @@ class DatasetGenerator:
         cb_records = []
         for key in cb_keys:
             cc, bc = key
-            intake = cb_intake.get(key, "") # empty/NULL if not in seat matrix
             cb_records.append({
                 "college_code": cc,
                 "branch_code": bc,
-                "intake_capacity": intake,
+                "intake_capacity": cb_intake.get(key, 60),
                 "fees_per_year": "", # NULL
                 "duration_years": "" # NULL
             })
@@ -239,6 +240,7 @@ class DatasetGenerator:
                 "round": c["round"],
                 "category": c["category"],
                 "raw_seat_type": c["raw_seat_type"],
+                "stage": c["stage"],
                 "closing_rank": c["closing_rank"],
                 "closing_percentile": c["closing_percentile"]
             })
