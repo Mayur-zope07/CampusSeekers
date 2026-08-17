@@ -88,7 +88,7 @@ function ScoreForm({ initial, onSave, onCancel, isPending }: {
     const update = (fields: Partial<ExamScorePayload>) => setForm(p => ({ ...p, ...fields }));
 
     return (
-        <Card className="flex flex-col gap-5 p-6 text-left border border-accent-cyan/20" hoverLift={false} glowColor="rgba(0,240,255,0.04)">
+        <Card className="flex flex-col gap-5 p-6 text-left border border-accent-cyan/20" hoverLift={false} glowColor="rgba(0,240,255,0.04)" allowOverflow={true}>
             <span className="text-[10px] font-bold uppercase tracking-wider text-accent-cyan">{initial ? "Edit Score" : "Add New Score"}</span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Dropdown
@@ -156,7 +156,7 @@ export default function ExamScoresPage() {
     };
 
     return (
-        <ProfileLayout>
+        <ProfileLayout activeItem="profile">
             <div className="flex flex-col gap-8">
                 <ScrollReveal>
                     <div className="flex items-center justify-between gap-4">

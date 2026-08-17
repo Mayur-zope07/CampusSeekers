@@ -47,6 +47,7 @@ class ExportServiceTest {
         ));
 
         recommendations = List.of(new RecommendationItemResponse(
+                UUID.randomUUID(),
                 collegeId, "1002", "COEP", UUID.randomUUID(), "CO", "Computers", "Pune", "MH",
                 CollegeType.GOVERNMENT, "A++", true, 4, 120, new BigDecimal("120000.00"),
                 new BigDecimal("94.50"), new BigDecimal("95.00"), new BigDecimal("0.50"),

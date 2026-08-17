@@ -17,6 +17,7 @@ export interface RecommendationRequestPayload {
 }
 
 export interface RecommendationItem {
+    id: string;
     collegeId: string;
     collegeCode: string;
     collegeName: string;

@@ -66,6 +66,7 @@ public class DashboardServiceImpl implements DashboardService {
             recentRecs = items.stream().map(item -> {
                 Placement p = placementsMap.get(item.getCollegeBranch().getCollege().getId());
                 return new RecommendationItemResponse(
+                        item.getId(),
                         item.getCollegeBranch().getCollege().getId(),
                         item.getCollegeBranch().getCollege().getCollegeCode(),
                         item.getCollegeBranch().getCollege().getName(),

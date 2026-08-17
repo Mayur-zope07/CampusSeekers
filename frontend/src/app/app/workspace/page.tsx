@@ -4,6 +4,7 @@ import React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Navbar } from "@/components/layout/Navbar";
+import { Sidebar } from "@/components/layout/Sidebar";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -58,12 +59,13 @@ function WorkspaceSidebar() {
 
 // ─── Workspace Layout ─────────────────────────────────────────────────────────
 
-export function WorkspaceLayout({ children }: { children: React.ReactNode }) {
+export function WorkspaceLayout({ children, activeItem = "workspace" }: { children: React.ReactNode; activeItem?: string }) {
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-primary-bg text-white">
+            <div className="min-h-screen bg-primary-bg text-white pl-0 md:pl-64 relative overflow-hidden">
                 <Navbar />
-                <div className="pt-24 pb-16 px-6 max-w-7xl mx-auto flex gap-6 items-start">
+                <Sidebar activeItem={activeItem} onChange={() => {}} />
+                <div className="pt-24 pb-16 px-6 max-w-7xl mx-auto flex gap-6 items-start relative z-10">
                     <WorkspaceSidebar />
                     <main className="flex-1 min-w-0">{children}</main>
                 </div>

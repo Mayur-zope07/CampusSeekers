@@ -15,6 +15,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { useColleges, useSearch, useComparison } from "@/hooks/useCollegeSearch";
 import { useToast } from "@/providers/ToastProvider";
+import { useCreateWishlist } from "@/hooks/useWorkflow";
 import {
     ArrowRight,
     Heart,
@@ -49,6 +50,16 @@ export default function CollegeSearchPage() {
     // Comparison Selection states
     const [compareIds, setCompareIds] = useState<string[]>([]);
     const [isCompareOpen, setIsCompareOpen] = useState(false);
+
+    React.useEffect(() => {
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search);
+            const queryParam = params.get("query");
+            if (queryParam) {
+                setKeyword(queryParam);
+            }
+        }
+    }, []);
 
     // Right Side preview drawer states
     const [previewCollegeId, setPreviewCollegeId] = useState<string | null>(null);
@@ -102,8 +113,16 @@ export default function CollegeSearchPage() {
         setPreviewDetails(college);
     };
 
-    const handleWishlist = (name: string) => {
-        toast.success(`Successfully saved ${name} to wishlist!`);
+    const { mutate: createWishlist } = useCreateWishlist();
+
+    const handleWishlist = (collegeId: string, name: string) => {
+        createWishlist(collegeId, {
+            onSuccess: () => toast.success(`Successfully saved ${name} to wishlist!`),
+            onError: (err: unknown) => {
+                const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+                toast.error(msg ?? "Already in wishlist or failed to save.");
+            },
+        });
     };
 
     return (
@@ -236,7 +255,7 @@ export default function CollegeSearchPage() {
                                                         <span className="text-[10px] text-text-tertiary">{college.city}, {college.state} • {college.type || "Government"}</span>
                                                     </div>
                                                     <div className="flex gap-2">
-                                                        <button onClick={() => handleWishlist(college.name)} className="w-8 h-8 rounded-full border border-border-color hover:border-accent-orange/40 hover:bg-accent-orange/5 text-text-secondary hover:text-accent-orange flex items-center justify-center transition-all cursor-pointer">
+                                                        <button onClick={() => handleWishlist(college.id, college.name)} className="w-8 h-8 rounded-full border border-border-color hover:border-accent-orange/40 hover:bg-accent-orange/5 text-text-secondary hover:text-accent-orange flex items-center justify-center transition-all cursor-pointer">
                                                             <Heart className="w-4 h-4" />
                                                         </button>
                                                         <button onClick={() => toggleCompare(college.id)} className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all cursor-pointer ${compareIds.includes(college.id) ? "border-accent-cyan bg-accent-cyan/10 text-accent-cyan" : "border-border-color hover:border-accent-cyan/40 hover:bg-accent-cyan/5 text-text-secondary hover:text-accent-cyan"}`}>

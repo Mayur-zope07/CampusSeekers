@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/providers/AuthProvider";
 import { motion, AnimatePresence } from "framer-motion";
 import { GraduationCap, Menu, X } from "lucide-react";
 import { Button } from "../ui/Button";
@@ -15,9 +17,12 @@ const navLinks = [
 ];
 
 export function Navbar() {
+    const router = useRouter();
+    const { isAuthenticated, checkProfileExistence } = useAuth();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("home");
+    const [isRedirecting, setIsRedirecting] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -54,6 +59,34 @@ export function Navbar() {
         };
     }, []);
 
+    const handleGetStarted = async () => {
+        if (isAuthenticated) {
+            setIsRedirecting(true);
+            try {
+                const profileExists = await checkProfileExistence();
+                if (profileExists) {
+                    router.push("/app/dashboard");
+                } else {
+                    router.push("/app/onboarding");
+                }
+            } catch {
+                router.push("/app/register");
+            } finally {
+                setIsRedirecting(false);
+            }
+        } else {
+            router.push("/app/register");
+        }
+    };
+
+    const handleScrollTo = (e: React.MouseEvent, id: string) => {
+        e.preventDefault();
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
     return (
         <header className="fixed top-0 left-0 w-full z-50 px-6 pt-6 transition-all duration-300">
             <div
@@ -64,7 +97,7 @@ export function Navbar() {
                         : "bg-transparent px-4 py-4"
                 )}
             >
-                <div className="flex items-center gap-2 select-none shrink-0">
+                <div className="flex items-center gap-2 select-none shrink-0 cursor-pointer" onClick={(e) => handleScrollTo(e, "home")}>
                     <GraduationCap className="w-5 h-5 text-white animate-pulse" />
                     <span className="font-futuristic font-extralight text-sm tracking-[0.25em] text-white uppercase">
                         CampusSeekers
@@ -76,6 +109,7 @@ export function Navbar() {
                         <a
                             key={link.id}
                             href={link.href}
+                            onClick={(e) => handleScrollTo(e, link.id)}
                             className={cn(
                                 "hover:text-white transition-colors uppercase tracking-wider relative py-1",
                                 activeSection === link.id ? "text-white font-semibold" : ""
@@ -94,11 +128,14 @@ export function Navbar() {
                 </div>
 
                 <div className="hidden md:flex items-center gap-3 shrink-0">
-                    <span className="text-xs font-semibold text-text-secondary hover:text-white transition-colors cursor-pointer mr-2 select-none">
+                    <span
+                        onClick={() => router.push("/app/login")}
+                        className="text-xs font-semibold text-text-secondary hover:text-white transition-colors cursor-pointer mr-2 select-none"
+                    >
                         Login
                     </span>
                     <Magnetic>
-                        <Button variant="primary" size="sm">
+                        <Button variant="primary" size="sm" onClick={handleGetStarted} isLoading={isRedirecting}>
                             Get Started
                         </Button>
                     </Magnetic>
@@ -125,7 +162,10 @@ export function Navbar() {
                                 <a
                                     key={link.id}
                                     href={link.href}
-                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    onClick={(e) => {
+                                        setIsMobileMenuOpen(false);
+                                        handleScrollTo(e, link.id);
+                                    }}
                                     className="text-sm font-semibold text-text-secondary hover:text-white transition-colors"
                                 >
                                     {link.label}
@@ -133,10 +173,10 @@ export function Navbar() {
                             ))}
                             <div className="h-[1px] bg-border-color/50 my-2" />
                             <div className="flex flex-col gap-3">
-                                <Button variant="secondary" className="w-full">
+                                <Button variant="secondary" className="w-full" onClick={() => { setIsMobileMenuOpen(false); router.push("/app/login"); }}>
                                     Login
                                 </Button>
-                                <Button variant="primary" className="w-full">
+                                <Button variant="primary" className="w-full" onClick={() => { setIsMobileMenuOpen(false); handleGetStarted(); }} isLoading={isRedirecting}>
                                     Get Started
                                 </Button>
                             </div>

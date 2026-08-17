@@ -81,7 +81,7 @@ function HistoryFeed({ history }: { history: TrackerHistoryItem[] }) {
     return (
         <div className="flex flex-col gap-0">
             {history.map((h, i) => {
-                const fromMeta = STATUS_META[h.previousStatus];
+                const fromMeta = h.previousStatus ? STATUS_META[h.previousStatus] : null;
                 const toMeta = STATUS_META[h.newStatus];
                 const date = new Date(h.changedAt).toLocaleString("en-IN");
                 return (
@@ -94,7 +94,11 @@ function HistoryFeed({ history }: { history: TrackerHistoryItem[] }) {
                         </div>
                         <div className="flex flex-col gap-0.5 min-w-0">
                             <div className="flex items-center gap-2 text-[11px]">
-                                <span className={`font-semibold ${fromMeta.color}`}>{fromMeta.label}</span>
+                                {fromMeta ? (
+                                    <span className={`font-semibold ${fromMeta.color}`}>{fromMeta.label}</span>
+                                ) : (
+                                    <span className="text-text-tertiary font-semibold">Initialized</span>
+                                )}
                                 <ArrowRight className="w-3 h-3 text-text-tertiary shrink-0" />
                                 <span className={`font-semibold ${toMeta.color}`}>{toMeta.label}</span>
                             </div>
@@ -239,7 +243,7 @@ export default function TrackerPage() {
     const active = (shortlists ?? []).filter(s => !s.isDeleted);
 
     return (
-        <WorkspaceLayout>
+        <WorkspaceLayout activeItem="admission">
             <div className="flex flex-col gap-8">
                 <ScrollReveal>
                     <div className="flex flex-col gap-2 text-left select-none">

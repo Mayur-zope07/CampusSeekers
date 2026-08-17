@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Sparkles, GraduationCap, CornerDownLeft } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 export function SpotlightSearch() {
+    const router = useRouter();
     const [query, setQuery] = useState("");
     const [isFocused, setIsFocused] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -62,6 +64,12 @@ export function SpotlightSearch() {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         onFocus={() => setIsFocused(true)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" && query) {
+                                router.push(`/app/search?query=${encodeURIComponent(query)}`);
+                                setIsFocused(false);
+                            }
+                        }}
                         placeholder="Search colleges, branches, or ask AI... (Ctrl + K)"
                         className="w-full bg-transparent text-white placeholder-text-disabled text-sm outline-none border-none"
                     />
@@ -88,6 +96,7 @@ export function SpotlightSearch() {
                                             onClick={() => {
                                                 setQuery(item.label);
                                                 setIsFocused(false);
+                                                router.push(`/app/search?query=${encodeURIComponent(item.label)}`);
                                             }}
                                             className="w-full flex items-center justify-between p-3 rounded-xs text-left hover:bg-white/5 transition-all text-xs text-text-secondary hover:text-white cursor-pointer group"
                                         >

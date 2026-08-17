@@ -23,19 +23,32 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                 onClose();
             }
         };
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                onClose();
+            }
+        };
         if (isOpen) {
             document.addEventListener("mousedown", handleClickOutside);
+            window.addEventListener("keydown", handleKeyDown);
         }
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            window.removeEventListener("keydown", handleKeyDown);
+        };
     }, [isOpen, onClose]);
 
     const commands = [
-        { label: "Dashboard Hub", icon: <LayoutDashboard className="w-4 h-4 text-accent-cyan" />, action: () => router.push("/app/dashboard") },
-        { label: "Search Colleges", icon: <Search className="w-4 h-4 text-accent-cyan" />, action: () => router.push("/showcase") },
-        { label: "Generate Recommendation", icon: <Sparkles className="w-4 h-4 text-accent-purple" />, action: () => router.push("/app/onboarding") },
-        { label: "View Wishlist", icon: <Heart className="w-4 h-4 text-accent-orange" />, action: () => router.push("/app/dashboard") },
-        { label: "Profile Settings", icon: <User className="w-4 h-4 text-text-secondary" />, action: () => router.push("/app/onboarding") },
-        { label: "System Log Out", icon: <LogOut className="w-4 h-4 text-accent-orange" />, action: () => logout() },
+        { label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4 text-accent-cyan" />, action: () => router.push("/app/dashboard") },
+        { label: "Explore Colleges", icon: <Search className="w-4 h-4 text-accent-cyan" />, action: () => router.push("/app/search") },
+        { label: "AI Recommendations", icon: <Sparkles className="w-4 h-4 text-accent-purple" />, action: () => router.push("/app/recommendations") },
+        { label: "My Workspace", icon: <LayoutDashboard className="w-4 h-4 text-accent-cyan" />, action: () => router.push("/app/workspace") },
+        { label: "Wishlist", icon: <Heart className="w-4 h-4 text-accent-orange" />, action: () => router.push("/app/workspace/wishlist") },
+        { label: "Shortlists", icon: <Heart className="w-4 h-4 text-accent-orange" />, action: () => router.push("/app/workspace/shortlists") },
+        { label: "Admission Tracker", icon: <LayoutDashboard className="w-4 h-4 text-accent-cyan" />, action: () => router.push("/app/workspace/tracker") },
+        { label: "My Profile", icon: <User className="w-4 h-4 text-text-secondary" />, action: () => router.push("/app/profile") },
+        { label: "Settings", icon: <User className="w-4 h-4 text-text-secondary" />, action: () => router.push("/app/profile/settings") },
+        { label: "Logout", icon: <LogOut className="w-4 h-4 text-accent-orange" />, action: () => logout() },
     ];
 
     const filtered = query

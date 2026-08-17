@@ -120,7 +120,7 @@ function RecommendationCard({
                     size="sm"
                     className="flex-1 gap-1.5"
                     isLoading={isShortlisting}
-                    onClick={() => onShortlist(item.branchId)}
+                    onClick={() => onShortlist(item.id)}
                 >
                     <Star className="w-3.5 h-3.5" /> Shortlist
                 </Button>
@@ -429,11 +429,11 @@ export default function RecommendationsPage() {
                                         {result.items.length > 0 ? (
                                             <div className="flex flex-col gap-4">
                                                 {result.items.map((item, idx) => (
-                                                    <ScrollReveal key={`${item.branchId}-${idx}`} delay={idx * 0.05}>
+                                                    <ScrollReveal key={`${item.id}-${idx}`} delay={idx * 0.05}>
                                                         <RecommendationCard
                                                             item={item}
                                                             onShortlist={handleShortlist}
-                                                            isShortlisting={shortlistingId === item.branchId}
+                                                            isShortlisting={shortlistingId === item.id}
                                                             onView={id => router.push(`/app/colleges/${id}`)}
                                                         />
                                                     </ScrollReveal>

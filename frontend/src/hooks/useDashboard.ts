@@ -41,12 +41,3 @@ export function useStudentScores() {
     });
 }
 
-export function useRecommendationHistory() {
-    return useQuery({
-        queryKey: ["recommendationHistory"],
-        queryFn: async () => {
-            const res = await api.get("/api/recommendations/history");
-            return res.data.data;
-        },
-    });
-}

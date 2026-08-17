@@ -14,6 +14,17 @@ interface DialogProps {
 }
 
 export function Dialog({ isOpen, onClose, title, children, className }: DialogProps) {
+    React.useEffect(() => {
+        if (!isOpen) return;
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                onClose();
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [isOpen, onClose]);
+
     return (
         <AnimatePresence>
             {isOpen && (

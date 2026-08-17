@@ -43,7 +43,7 @@ function Counter({ value, suffix = "", duration = 1500 }: CounterProps) {
     }, [isInView, value, duration]);
 
     return (
-        <span ref={ref} className="font-futuristic font-light text-2xl md:text-4xl text-white tracking-wider">
+        <span ref={ref} className="font-futuristic font-light text-xl md:text-2xl lg:text-3xl xl:text-4xl text-white tracking-wider">
             {count.toLocaleString()}{suffix}
         </span>
     );
@@ -61,11 +61,11 @@ export function Statistics() {
     return (
         <section id="stats" className="relative py-16 bg-primary-bg max-w-5xl mx-auto w-full px-6 z-10">
             <ScrollReveal>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     {stats.map((item, idx) => (
-                        <Card key={idx} className="flex flex-col items-center justify-center p-6 text-center" glowColor="rgba(0, 240, 255, 0.08)" hoverLift={false}>
+                        <Card key={idx} className="flex flex-col items-center justify-center p-4 text-center" glowColor="rgba(0, 240, 255, 0.08)" hoverLift={false}>
                             <Counter value={item.value} suffix={item.suffix} />
-                            <span className="text-[10px] text-text-secondary font-semibold uppercase tracking-wider mt-2">
+                            <span className="text-[8px] sm:text-[9px] md:text-[10px] text-text-secondary font-semibold uppercase tracking-wider mt-2">
                                 {item.label}
                             </span>
                         </Card>

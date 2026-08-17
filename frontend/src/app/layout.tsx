@@ -6,7 +6,6 @@ import { QueryProvider } from "@/providers/QueryProvider";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { LenisProvider } from "@/providers/LenisProvider";
-import { CustomCursor } from "@/components/animations/CustomCursor";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -36,7 +35,6 @@ export default function RootLayout({
             <ToastProvider>
               <AuthProvider>
                 <LenisProvider>
-                  <CustomCursor />
                   <div className="noise-overlay" />
                   {children}
                 </LenisProvider>

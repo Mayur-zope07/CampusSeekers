@@ -1,13 +1,21 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/providers/AuthProvider";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
+import { Dialog } from "../ui/Dialog";
 import { Magnetic } from "../animations/Magnetic";
-import { Sparkles, ArrowRight, Play } from "lucide-react";
+import { Sparkles, ArrowRight, Play, CheckCircle2, Star } from "lucide-react";
 
 export function Hero() {
+    const router = useRouter();
+    const { isAuthenticated, checkProfileExistence } = useAuth();
+    const [isRedirecting, setIsRedirecting] = useState(false);
+    const [isDemoOpen, setIsDemoOpen] = useState(false);
+
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -20,6 +28,26 @@ export function Hero() {
     };
 
     const bgGlow = useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(0, 240, 255, 0.08), rgba(138, 43, 226, 0.04) 50%, transparent 80%)`;
+
+    const handleGetStarted = async () => {
+        if (isAuthenticated) {
+            setIsRedirecting(true);
+            try {
+                const profileExists = await checkProfileExistence();
+                if (profileExists) {
+                    router.push("/app/dashboard");
+                } else {
+                    router.push("/app/onboarding");
+                }
+            } catch {
+                router.push("/app/register");
+            } finally {
+                setIsRedirecting(false);
+            }
+        } else {
+            router.push("/app/register");
+        }
+    };
 
     return (
         <section
@@ -86,23 +114,100 @@ export function Hero() {
                     className="flex flex-wrap items-center justify-center gap-4 mt-6"
                 >
                     <Magnetic>
-                        <Button variant="primary" size="lg">
+                        <Button variant="primary" size="lg" onClick={handleGetStarted} isLoading={isRedirecting}>
                             Get Started <ArrowRight className="w-4 h-4 ml-1.5" />
                         </Button>
                     </Magnetic>
                     <Magnetic>
-                        <Button variant="secondary" size="lg">
+                        <Button variant="secondary" size="lg" onClick={() => router.push("/app/search")}>
                             Explore Colleges
                         </Button>
                     </Magnetic>
                     <Magnetic>
-                        <Button variant="secondary" size="lg" className="gap-2">
+                        <Button variant="secondary" size="lg" className="gap-2" onClick={() => setIsDemoOpen(true)}>
                             <Play className="w-4 h-4 text-accent-cyan fill-accent-cyan" />
                             Watch Demo
                         </Button>
                     </Magnetic>
                 </motion.div>
             </div>
+
+            <Dialog isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} title="CampusSeekers Platform Tour" className="max-w-2xl">
+                <div className="flex flex-col gap-5 mt-2 text-left select-none">
+                    <p className="text-xs text-text-secondary leading-relaxed">
+                        CampusSeekers is an enterprise-grade smart matching platform designed to help students analyze cutoff probabilities, optimize wishlists, and track admission milestones in real-time.
+                    </p>
+
+                    <div className="border border-border-color/30 rounded-md p-4 bg-white/2 flex flex-col gap-4">
+                        <div className="flex items-center justify-between border-b border-border-color/20 pb-2">
+                            <span className="text-[10px] text-accent-cyan font-bold uppercase tracking-wider">Simulated Match Screen</span>
+                            <Badge variant="cyan" className="py-0 px-2 text-[9px]">VJTI Mumbai Preview</Badge>
+                        </div>
+
+                        <div className="flex justify-between items-start gap-4">
+                            <div className="flex flex-col gap-1 min-w-0">
+                                <h4 className="font-bold text-sm text-white">VJTI Mumbai</h4>
+                                <span className="text-xs text-text-tertiary">Information Technology • Government Autonomous</span>
+                            </div>
+                            <div className="flex flex-col items-end gap-1 shrink-0">
+                                <Badge variant="cyan" glow>TARGET Match</Badge>
+                                <span className="text-[10px] text-text-secondary">Chance: 78%</span>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2 text-[10px] border-t border-border-color/20 pt-3 text-text-secondary">
+                            <div>
+                                <span className="text-text-tertiary block">Your Percentile</span>
+                                <span className="font-bold text-white">99.12%</span>
+                            </div>
+                            <div>
+                                <span className="text-text-tertiary block">Target Cutoff</span>
+                                <span className="font-bold text-white">98.90%</span>
+                            </div>
+                            <div>
+                                <span className="text-text-tertiary block">Margin Difference</span>
+                                <span className="font-bold text-accent-green">+0.22%</span>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-1 text-[10px] bg-white/2 p-2.5 rounded-sm border border-border-color/20">
+                            <div className="flex justify-between">
+                                <span className="text-text-tertiary">Admission Tracker Status</span>
+                                <span className="text-accent-cyan font-semibold">Documents Verified ✓</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-border-color/20 rounded-full overflow-hidden mt-1">
+                                <div className="h-full bg-gradient-to-r from-accent-cyan to-accent-green rounded-full" style={{ width: "66%" }} />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div className="flex gap-2 items-start">
+                            <CheckCircle2 className="w-4 h-4 text-accent-green shrink-0 mt-0.5" />
+                            <div>
+                                <span className="font-bold text-white block">Safe / Target Prediction</span>
+                                <span className="text-[11px] text-text-secondary">Cutoff delta calculator classifies safe vs dream colleges.</span>
+                            </div>
+                        </div>
+                        <div className="flex gap-2 items-start">
+                            <Star className="w-4 h-4 text-accent-purple shrink-0 mt-0.5" />
+                            <div>
+                                <span className="font-bold text-white block">Priority Shortlists</span>
+                                <span className="text-[11px] text-text-secondary">Drag, re-order, and assign customized weights.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end gap-2 border-t border-border-color/20 pt-4 mt-2">
+                        <Button variant="secondary" onClick={() => setIsDemoOpen(false)}>
+                            Close Demo
+                        </Button>
+                        <Button variant="primary" onClick={() => { setIsDemoOpen(false); handleGetStarted(); }}>
+                            Get Started Now
+                        </Button>
+                    </div>
+                </div>
+            </Dialog>
         </section>
     );
 }

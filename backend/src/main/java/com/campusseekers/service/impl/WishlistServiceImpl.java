@@ -132,8 +132,7 @@ public class WishlistServiceImpl implements WishlistService {
     public Page<WishlistResponse> searchWishlist(String keyword, String naac, Pageable pageable) {
         StudentProfile studentProfile = getAuthenticatedStudentProfile();
 
-        Specification<Wishlist> spec = Specification.where(StudentWorkflowSpecifications.wishlistHasStudent(studentProfile.getId()))
-                .and(StudentWorkflowSpecifications.wishlistNotDeleted());
+        Specification<Wishlist> spec = Specification.where(StudentWorkflowSpecifications.wishlistHasStudent(studentProfile.getId()));
 
         if (keyword != null && !keyword.isBlank()) {
             spec = spec.and(StudentWorkflowSpecifications.wishlistHasCollegeKeyword(keyword));

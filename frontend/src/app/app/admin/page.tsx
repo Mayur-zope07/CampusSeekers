@@ -45,7 +45,6 @@ import {
     X,
     Search,
     BookOpen,
-    Activity,
     Cpu,
 } from "lucide-react";
 
@@ -193,7 +192,7 @@ export default function AdminWorkspacePage() {
     };
 
     const handleImport = (type: "all" | "colleges" | "branches" | "college-branches" | "cutoffs" | "seat-matrix") => {
-        triggerImport({ type, replace: replaceExisting }, {
+        triggerImport({ type, replace: replaceExisting, dryRun: true }, {
             onSuccess: (data) => {
                 setImportResult(data);
                 toast.success(`${type.toUpperCase()} import complete.`);
@@ -265,8 +264,8 @@ export default function AdminWorkspacePage() {
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 select-none">
                                         {[
                                             { label: "Colleges Database", value: dashboard?.collegesCount, icon: <Database className="w-4.5 h-4.5 text-accent-cyan" /> },
+                                            { label: "Branch Database", value: dashboard?.branchesCount, icon: <BookOpen className="w-4.5 h-4.5 text-accent-green" /> },
                                             { label: "Matches Run", value: dashboard?.recommendationsCount, icon: <Zap className="w-4.5 h-4.5 text-accent-purple" /> },
-                                            { label: "Active Cohort", value: dashboard?.activeUsersCount, icon: <Activity className="w-4.5 h-4.5 text-accent-green" /> },
                                             { label: "System API Status", value: dashboard?.apiStatus, icon: <TrendingUp className="w-4.5 h-4.5 text-accent-cyan" /> },
                                         ].map((s, idx) => (
                                             <Card key={idx} className="flex flex-col gap-2.5 p-4" hoverLift={false}>

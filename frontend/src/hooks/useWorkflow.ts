@@ -84,7 +84,11 @@ export function useCreateWishlist() {
             const res = await api.post("/api/wishlist", { collegeId });
             return res.data.data as WishlistItem;
         },
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["wishlist"] }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["wishlist"] });
+            qc.invalidateQueries({ queryKey: ["dashboardData"] });
+            qc.invalidateQueries({ queryKey: ["dashboardStatistics"] });
+        },
     });
 }
 
@@ -94,7 +98,11 @@ export function useDeleteWishlist() {
         mutationFn: async (id: string) => {
             await api.delete(`/api/wishlist/${id}`);
         },
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["wishlist"] }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["wishlist"] });
+            qc.invalidateQueries({ queryKey: ["dashboardData"] });
+            qc.invalidateQueries({ queryKey: ["dashboardStatistics"] });
+        },
     });
 }
 
@@ -105,7 +113,11 @@ export function useRestoreWishlist() {
             const res = await api.put(`/api/wishlist/${id}/restore`);
             return res.data.data as WishlistItem;
         },
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["wishlist"] }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["wishlist"] });
+            qc.invalidateQueries({ queryKey: ["dashboardData"] });
+            qc.invalidateQueries({ queryKey: ["dashboardStatistics"] });
+        },
     });
 }
 
@@ -128,7 +140,11 @@ export function useCreateShortlist() {
             const res = await api.post("/api/shortlists", payload);
             return res.data.data as ShortlistItem;
         },
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["shortlists"] }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["shortlists"] });
+            qc.invalidateQueries({ queryKey: ["dashboardData"] });
+            qc.invalidateQueries({ queryKey: ["dashboardStatistics"] });
+        },
     });
 }
 
@@ -139,7 +155,11 @@ export function useUpdateShortlist() {
             const res = await api.put(`/api/shortlists/${id}`, null, { params: { priority, notes } });
             return res.data.data as ShortlistItem;
         },
-        onSuccess: () => qc.invalidateQueries({ queryKey: ["shortlists"] }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["shortlists"] });
+            qc.invalidateQueries({ queryKey: ["dashboardData"] });
+            qc.invalidateQueries({ queryKey: ["dashboardStatistics"] });
+        },
     });
 }
 
@@ -152,6 +172,8 @@ export function useDeleteShortlist() {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["shortlists"] });
             qc.invalidateQueries({ queryKey: ["admissionTracker"] });
+            qc.invalidateQueries({ queryKey: ["dashboardData"] });
+            qc.invalidateQueries({ queryKey: ["dashboardStatistics"] });
         },
     });
 }

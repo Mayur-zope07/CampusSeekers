@@ -164,7 +164,7 @@ export default function OnboardingPage() {
 
     return (
         <ProtectedRoute>
-            <main className="min-h-screen bg-primary-bg flex items-center justify-center p-6 relative overflow-hidden">
+            <main className="min-h-screen bg-primary-bg flex items-center justify-center p-6 relative overflow-y-auto py-12">
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0">
                     <div className="absolute top-[10%] left-[20%] w-96 h-96 bg-accent-cyan rounded-full blur-[150px] animate-ambient-breathe" />
                     <div className="absolute bottom-[10%] right-[20%] w-96 h-96 bg-accent-purple rounded-full blur-[150px] animate-ambient-breathe" />
@@ -172,7 +172,7 @@ export default function OnboardingPage() {
 
                 <div className="w-full max-w-xl relative z-10">
                     <ScrollReveal>
-                        <Card className="flex flex-col gap-6 w-full" glowColor="rgba(0, 240, 255, 0.12)">
+                        <Card className="flex flex-col gap-6 w-full" glowColor="rgba(0, 240, 255, 0.12)" allowOverflow={true}>
                             {/* Header & Progress */}
                             {step < 10 && (
                                 <div className="flex flex-col gap-3">

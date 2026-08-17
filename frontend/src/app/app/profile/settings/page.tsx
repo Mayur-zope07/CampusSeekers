@@ -54,7 +54,7 @@ export default function AppSettingsPage() {
     });
 
     return (
-        <ProfileLayout>
+        <ProfileLayout activeItem="profile">
             <div className="flex flex-col gap-8">
                 <ScrollReveal>
                     <div className="flex flex-col gap-2 text-left">

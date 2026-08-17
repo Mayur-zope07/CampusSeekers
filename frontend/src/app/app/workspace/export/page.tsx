@@ -126,8 +126,23 @@ export default function ExportPage() {
                 setLastExported(p => ({ ...p, [key]: "pdf" }));
                 setPdfLoading(null);
             },
-            onError: () => {
-                toast.error("Export failed. Please try again.");
+            onError: (err: unknown) => {
+                const error = err as { response?: { data?: unknown } };
+                if (error.response && error.response.data instanceof Blob) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        try {
+                            const json = JSON.parse(reader.result as string);
+                            toast.error(json.message || "Export failed. Please try again.");
+                        } catch {
+                            toast.error("Export failed. Please try again.");
+                        }
+                    };
+                    reader.readAsText(error.response.data);
+                } else {
+                    const msg = (error.response?.data as { message?: string })?.message || "Export failed. Please try again.";
+                    toast.error(msg);
+                }
                 setPdfLoading(null);
             },
         });
@@ -141,15 +156,30 @@ export default function ExportPage() {
                 setLastExported(p => ({ ...p, [key]: "csv" }));
                 setCsvLoading(null);
             },
-            onError: () => {
-                toast.error("Export failed. Please try again.");
+            onError: (err: unknown) => {
+                const error = err as { response?: { data?: unknown } };
+                if (error.response && error.response.data instanceof Blob) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        try {
+                            const json = JSON.parse(reader.result as string);
+                            toast.error(json.message || "Export failed. Please try again.");
+                        } catch {
+                            toast.error("Export failed. Please try again.");
+                        }
+                    };
+                    reader.readAsText(error.response.data);
+                } else {
+                    const msg = (error.response?.data as { message?: string })?.message || "Export failed. Please try again.";
+                    toast.error(msg);
+                }
                 setCsvLoading(null);
             },
         });
     };
 
     return (
-        <WorkspaceLayout>
+        <WorkspaceLayout activeItem="workspace">
             <div className="flex flex-col gap-8">
                 <ScrollReveal>
                     <div className="flex flex-col gap-2 text-left select-none">

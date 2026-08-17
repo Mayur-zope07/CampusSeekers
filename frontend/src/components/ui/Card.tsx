@@ -8,6 +8,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
     glowColor?: string;
     hoverLift?: boolean;
+    allowOverflow?: boolean;
 }
 
 export function Card({
@@ -15,6 +16,7 @@ export function Card({
     className,
     glowColor = "rgba(138, 43, 226, 0.15)",
     hoverLift = true,
+    allowOverflow = false,
     ...props
 }: CardProps) {
     const mouseX = useMotionValue(0);
@@ -35,7 +37,8 @@ export function Card({
             ref={ref}
             onMouseMove={handleMouseMove}
             className={cn(
-                "relative overflow-hidden glass-md rounded-md p-6 border border-border-color shadow-lg transition-all duration-300 group",
+                "relative glass-md rounded-md p-6 border border-border-color shadow-lg transition-all duration-300 group",
+                !allowOverflow && "overflow-hidden",
                 hoverLift && "hover:-translate-y-1 hover:shadow-2xl hover:border-white/15",
                 className
             )}

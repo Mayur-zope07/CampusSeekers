@@ -121,7 +121,7 @@ export default function WishlistPage() {
     };
 
     return (
-        <WorkspaceLayout>
+        <WorkspaceLayout activeItem="wishlist">
             <div className="flex flex-col gap-8">
                 {/* Header */}
                 <ScrollReveal>

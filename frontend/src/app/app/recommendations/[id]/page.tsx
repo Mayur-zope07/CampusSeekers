@@ -184,7 +184,7 @@ export default function RecommendationDetailsPage({ params }: PageProps) {
                                                     <Button variant="secondary" size="sm" className="flex-1" onClick={() => router.push(`/app/colleges/${item.collegeId}`)}>
                                                         <ArrowRight className="w-3.5 h-3.5 mr-1" /> View College
                                                     </Button>
-                                                    <Button variant="primary" size="sm" className="flex-1" isLoading={shortlistingId === item.branchId} onClick={() => handleShortlist(item.branchId)}>
+                                                    <Button variant="primary" size="sm" className="flex-1" isLoading={shortlistingId === item.id} onClick={() => handleShortlist(item.id)}>
                                                         <Star className="w-3.5 h-3.5 mr-1" /> Shortlist
                                                     </Button>
                                                 </div>

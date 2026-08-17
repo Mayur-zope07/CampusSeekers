@@ -69,7 +69,7 @@ export default function AcademicProfilePage() {
     };
 
     return (
-        <ProfileLayout>
+        <ProfileLayout activeItem="profile">
             <div className="flex flex-col gap-8">
                 <ScrollReveal>
                     <div className="flex items-center justify-between gap-4">
@@ -93,7 +93,7 @@ export default function AcademicProfilePage() {
                 ) : (
                     <div className="flex flex-col gap-5">
                         <ScrollReveal delay={0.05}>
-                            <Card className="flex flex-col gap-5 p-6 text-left" hoverLift={false}>
+                            <Card className="flex flex-col gap-5 p-6 text-left" hoverLift={false} allowOverflow={true}>
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">Personal Information</span>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <Input label="First Name *" value={form.firstName} onChange={e => update({ firstName: e.target.value })} placeholder="e.g. Arjun" required />
@@ -109,7 +109,7 @@ export default function AcademicProfilePage() {
                         </ScrollReveal>
 
                         <ScrollReveal delay={0.08}>
-                            <Card className="flex flex-col gap-5 p-6 text-left" hoverLift={false}>
+                            <Card className="flex flex-col gap-5 p-6 text-left" hoverLift={false} allowOverflow={true}>
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">Reservation Category</span>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <Dropdown

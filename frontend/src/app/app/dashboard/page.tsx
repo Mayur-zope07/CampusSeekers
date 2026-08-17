@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { WelcomeHeader } from "@/components/dashboard/WelcomeHeader";
 import { StatsSection } from "@/components/dashboard/StatsSection";
-import { CommandPalette } from "@/components/dashboard/CommandPalette";
 import { TasksPanel } from "@/components/dashboard/TasksPanel";
 import { DashboardExport } from "@/components/dashboard/DashboardExport";
 import { Card } from "@/components/ui/Card";
@@ -21,24 +20,11 @@ import { useRouter } from "next/navigation";
 export default function StudentDashboardPage() {
     const router = useRouter();
     const [sidebarItem, setSidebarItem] = useState("dashboard");
-    const [isCommandOpen, setIsCommandOpen] = useState(false);
 
     // Queries to backend REST APIs
     const { data: dbData, isLoading: dbLoading, refetch } = useDashboardData();
     const { data: profile, isLoading: profileLoading } = useProfile();
     const { data: scores, isLoading: scoresLoading } = useStudentScores();
-
-    // Listen for Ctrl+K command palette
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-                e.preventDefault();
-                setIsCommandOpen(true);
-            }
-        };
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, []);
 
     const isLoading = dbLoading || profileLoading || scoresLoading;
 
@@ -258,8 +244,6 @@ export default function StudentDashboardPage() {
                     </div>
                 </div>
 
-                {/* Spotlight Command Palette Popover */}
-                <CommandPalette isOpen={isCommandOpen} onClose={() => setIsCommandOpen(false)} />
             </div>
         </ProtectedRoute>
     );

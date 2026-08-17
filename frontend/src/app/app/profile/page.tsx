@@ -4,12 +4,12 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Navbar } from "@/components/layout/Navbar";
+import { Sidebar } from "@/components/layout/Sidebar";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
-import { useProfile } from "@/hooks/useProfile";
-import { useCurrentUser } from "@/hooks/useProfile";
+import { useProfile, useCurrentUser, useScores } from "@/hooks/useProfile";
 import { useWishlist } from "@/hooks/useWorkflow";
 import { useShortlists } from "@/hooks/useWorkflow";
 import { useRecommendationHistory } from "@/hooks/useRecommendations";
@@ -55,12 +55,13 @@ function ProfileSidebar() {
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
-export function ProfileLayout({ children }: { children: React.ReactNode }) {
+export function ProfileLayout({ children, activeItem = "profile" }: { children: React.ReactNode; activeItem?: string }) {
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-primary-bg text-white">
+            <div className="min-h-screen bg-primary-bg text-white pl-0 md:pl-64 relative overflow-hidden">
                 <Navbar />
-                <div className="pt-24 pb-16 px-6 max-w-7xl mx-auto flex gap-6 items-start">
+                <Sidebar activeItem={activeItem} onChange={() => {}} />
+                <div className="pt-24 pb-16 px-6 max-w-7xl mx-auto flex gap-6 items-start relative z-10">
                     <ProfileSidebar />
                     <main className="flex-1 min-w-0">{children}</main>
                 </div>
@@ -99,12 +100,13 @@ export default function ProfilePage() {
     const { data: wishlist } = useWishlist();
     const { data: shortlists } = useShortlists();
     const { data: recHistory } = useRecommendationHistory();
+    const { data: scores } = useScores();
 
     const isLoading = profileLoading || userLoading;
 
     const completionItems = [
         { label: "Basic Profile",   done: !!profile },
-        { label: "Exam Scores",     done: false },
+        { label: "Exam Scores",     done: (scores?.length ?? 0) > 0 },
         { label: "Wishlist",        done: (wishlist?.length ?? 0) > 0 },
         { label: "Shortlist",       done: (shortlists?.length ?? 0) > 0 },
         { label: "Recommendation",  done: (recHistory?.length ?? 0) > 0 },

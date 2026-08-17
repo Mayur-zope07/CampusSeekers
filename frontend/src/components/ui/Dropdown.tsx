@@ -42,7 +42,7 @@ export function Dropdown({
     }, []);
 
     return (
-        <div ref={containerRef} className={cn("relative w-full", className)}>
+        <div ref={containerRef} className={cn("relative w-full", isOpen && "z-50", className)}>
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}

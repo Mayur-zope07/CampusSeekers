@@ -139,12 +139,12 @@ export function useAdminDashboard() {
             // Aggregate backend list queries to show stats dashboard
             const collegesRes = await api.get("/api/colleges", { params: { size: 1 } });
             const recRes = await api.get("/api/recommendations/history", { params: { size: 1 } });
+            const branchesRes = await api.get("/api/branches");
             
             return {
-                collegesCount: collegesRes.data?.data?.totalElements ?? 48,
-                recommendationsCount: recRes.data?.data?.totalElements ?? 142,
-                activeUsersCount: 312,
-                importsCount: 8,
+                collegesCount: collegesRes.data?.data?.totalElements ?? 0,
+                branchesCount: branchesRes.data?.data?.length ?? 0,
+                recommendationsCount: recRes.data?.data?.totalElements ?? 0,
                 apiStatus: "Operational",
                 dbStatus: "Healthy",
                 lastImportStatus: "COMPLETED",
@@ -246,9 +246,12 @@ export function useDeleteBranch() {
 
 export function useTriggerImport() {
     return useMutation({
-        mutationFn: async (params: { type: "all" | "colleges" | "branches" | "college-branches" | "cutoffs" | "seat-matrix"; replace: boolean }) => {
+        mutationFn: async (params: { type: "all" | "colleges" | "branches" | "college-branches" | "cutoffs" | "seat-matrix"; replace: boolean; dryRun?: boolean }) => {
             const res = await api.post(`/api/admin/import/${params.type}`, null, {
-                params: { replaceExisting: params.replace }
+                params: {
+                    replaceExisting: params.replace,
+                    dryRun: params.dryRun ?? true,
+                }
             });
             return res.data.data as ImportSummary;
         }
@@ -261,15 +264,30 @@ export function useSystemHealth() {
     return useQuery({
         queryKey: ["systemHealth"],
         queryFn: async () => {
-            return {
-                status: "HEALTHY",
-                apiStatus: "Operational",
-                dbStatus: "Healthy",
-                memoryUsage: "342MB / 1024MB",
-                cpuLoad: "1.2%",
-                engineVersion: "v1.4.2",
-                cacheHitRate: "89.4%"
-            } as SystemHealthData;
+            try {
+                const res = await api.get("/actuator/health");
+                const isUp = res.data?.status === "UP";
+                const dbUp = res.data?.components?.db?.status === "UP";
+                return {
+                    status: isUp ? "HEALTHY" : "DEGRADED",
+                    apiStatus: isUp ? "Operational" : "Degraded",
+                    dbStatus: dbUp ? "Healthy" : "Offline",
+                    memoryUsage: "342MB / 1024MB",
+                    cpuLoad: "1.2%",
+                    engineVersion: "v1.4.2",
+                    cacheHitRate: "89.4%"
+                } as SystemHealthData;
+            } catch {
+                return {
+                    status: "DOWN",
+                    apiStatus: "Offline",
+                    dbStatus: "Offline",
+                    memoryUsage: "0MB / 1024MB",
+                    cpuLoad: "0%",
+                    engineVersion: "v1.4.2",
+                    cacheHitRate: "0%"
+                } as SystemHealthData;
+            }
         },
         refetchInterval: 5000,
     });

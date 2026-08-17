@@ -177,7 +177,7 @@ export default function ShortlistsPage() {
     };
 
     return (
-        <WorkspaceLayout>
+        <WorkspaceLayout activeItem="workspace">
             <div className="flex flex-col gap-8">
                 <ScrollReveal>
                     <div className="flex flex-col gap-2 text-left select-none">

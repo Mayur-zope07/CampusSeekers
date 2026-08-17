@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record RecommendationItemResponse(
+        UUID id,
         UUID collegeId,
         String collegeCode,
         String collegeName,
